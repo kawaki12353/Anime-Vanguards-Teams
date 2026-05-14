@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anime Vanguards - Team Comps</title>
 
+    <!-- Importando os bancos de dados primeiro para que fiquem disponíveis no script -->
+    <script src="database/teams.js"></script>
+    <script src="database/units.js"></script>
+    
     <link rel="stylesheet" href="menu.css">
     <script src="menu.js" defer></script>
 
@@ -68,7 +72,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* Cada time agora fica dentro de um Container visível */
             background: var(--card);
             border: 1px solid var(--border);
             padding: 25px;
@@ -92,7 +95,6 @@
             width: 100%;
         }
 
-        /* Container do Slot */
         .unit-slot {
             aspect-ratio: 1 / 1;
             background: var(--bg);
@@ -181,9 +183,8 @@
         }
 
         @media (max-width: 768px) {
-            /* Alterado para 1x6 no mobile (1 coluna) */
             .unit-grid { grid-template-columns: 1fr; } 
-            
+
             .modal-content {
                 width: 100%;
                 bottom: 0; left: 0;
@@ -195,7 +196,7 @@
         }
 
         .modal-unit-img { width: 120px; height: 120px; margin-bottom: 15px; }
-        
+
         .trait-container {
             display: flex;
             flex-direction: column;
@@ -241,7 +242,6 @@
 <body>
 
 <header class="header">
-    <!-- Título alterado para imagem conforme solicitado -->
     <img src="assets/Av_logo.png" alt="Anime Vanguards Logo" class="logo">
 </header>
 
@@ -266,23 +266,35 @@ const uiText = {
     en: { btn: "🇺🇸 EN", dpsLabel: "Total DPS: ", bestTrait: "Best Trait: ", noTeams: "No teams here yet" }
 };
 
-// Variáveis para armazenar os dados carregados do banco
 let globalUnits = {};
 let globalTeams = [];
 
-async function loadDatabase() {
+function loadDatabase() {
     try {
-        // Busca os dados das unidades (traits ideais, etc)
-        const unitsRes = await fetch('database/units.json');
-        globalUnits = await unitsRes.json();
+        // As variáveis 'units' e 'teams' vêm dos arquivos database/units.js e database/teams.js
+        
+        // 1. Processa as unidades
+        globalUnits = {};
+        for (const name in units) {
+            globalUnits[name] = {
+                ...units[name],
+                name: name // Garante que o nome da chave seja uma propriedade para o modal/imagem
+            };
+        }
 
-        // Busca os dados das composições de times
-        const teamsRes = await fetch('database/teams.json');
-        globalTeams = await teamsRes.json();
+        // 2. Processa os times do formato de objeto para o formato de array que o renderTeams usa
+        globalTeams = Object.keys(teams).map(teamName => {
+            const t = teams[teamName];
+            return {
+                title: { pt: teamName, en: teamName }, // Fallback para o nome do time
+                units: [t.slot1, t.slot2, t.slot3, t.slot4, t.slot5, t.slot6],
+                dps: "Stats N/A" // Valor padrão caso não tenha no seu JS
+            };
+        });
 
         renderTeams();
     } catch (error) {
-        console.error("Erro ao carregar banco de dados:", error);
+        console.error("Erro ao processar banco de dados:", error);
     }
 }
 
@@ -316,16 +328,14 @@ function renderTeams() {
             slotDiv.className = 'unit-slot';
 
             const unitsInSlot = Array.isArray(unitNameOrArray) ? unitNameOrArray : [unitNameOrArray];
-            
+
             unitsInSlot.forEach((name, index) => {
-                // Pega os dados extras da unidade no banco de units
                 const unitData = globalUnits[name] || { name: name, trait: "Common" };
-                
+
                 const unitCard = document.createElement('div');
                 unitCard.className = 'unit-card';
                 unitCard.onclick = () => openModal(unitData);
-                
-                // Imagem vindo de /assets/units/
+
                 unitCard.innerHTML = `
                     <img src="assets/units/${name}.png" onerror="this.src='assets/sem_icone.png'">
                     ${unitsInSlot.length > 1 && index === 0 ? '<div class="swap-indicator">▼ swap</div>' : ''}
