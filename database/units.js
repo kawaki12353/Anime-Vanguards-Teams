@@ -1,5 +1,5 @@
 const units = {
-    "Shinobi Sage": {
+    "Shinobi Sage (Friendship)": {
         trait: "monarch",
         memoria: "Trust of Others"
     }
