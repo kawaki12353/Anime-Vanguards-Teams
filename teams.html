@@ -262,8 +262,8 @@
 let lang = localStorage.getItem("siteLang") || "pt";
 
 const uiText = {
-    pt: { btn: "🇧🇷 PT", dpsLabel: "DPS Total: ", bestTrait: "Melhor Trait: " },
-    en: { btn: "🇺🇸 EN", dpsLabel: "Total DPS: ", bestTrait: "Best Trait: " }
+    pt: { btn: "🇧🇷 PT", dpsLabel: "DPS Total: ", bestTrait: "Melhor Trait: ", noTeams: "Nenhum time aqui ainda" },
+    en: { btn: "🇺🇸 EN", dpsLabel: "Total DPS: ", bestTrait: "Best Trait: ", noTeams: "No teams here yet" }
 };
 
 // Variáveis para armazenar os dados carregados do banco
@@ -290,6 +290,15 @@ function renderTeams() {
     const container = document.getElementById('teamsContainer');
     container.innerHTML = "";
     const ui = uiText[lang];
+
+    if (globalTeams.length === 0) {
+        const emptyBlock = document.createElement('div');
+        emptyBlock.className = 'team-block';
+        emptyBlock.textContent = ui.noTeams;
+        container.appendChild(emptyBlock);
+        document.getElementById('langBtn').textContent = ui.btn;
+        return;
+    }
 
     globalTeams.forEach(team => {
         const block = document.createElement('div');
