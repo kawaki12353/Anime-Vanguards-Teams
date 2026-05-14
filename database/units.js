@@ -5,15 +5,15 @@ const units = {
     },
     "Agony Shinobi (Force)": {
         trait: "monarch",
-        memoria: "Trust of Others"
+        memoria: "Shall Know Pain"
     },
     "Shinobi God (Infinite Dreams)": {
         trait: "monarch",
-        memoria: "Trust of Others"
+        memoria: "Peak of Shinobi"
     },
     "Fastest Shinobi (Flash)": {
         trait: "monarch",
-        memoria: "Trust of Others"
+        memoria: "A Father's Sacrifice"
     },
     "Alocard (Vampire King)": {
         trait: "monarch",
