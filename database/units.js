@@ -17,10 +17,10 @@ const units = {
     },
     "Alocard (Vampire King)": {
         trait: "monarch",
-        memoria: "Trust of Others"
+        memoria: "Enthusiastic Walks"
     },
     "Lich King (Ruler)": {
         trait: "monarch",
-        memoria: "Trust of Others"
+        memoria: "Enthusiastic Walks"
     }
 };
