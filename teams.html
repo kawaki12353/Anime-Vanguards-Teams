@@ -8,7 +8,7 @@
     <!-- Importando os bancos de dados primeiro para que fiquem disponíveis no script -->
     <script src="database/teams.js"></script>
     <script src="database/units.js"></script>
-    
+
     <link rel="stylesheet" href="menu.css">
     <script src="menu.js" defer></script>
 
@@ -41,6 +41,10 @@
         }
 
         /* --- Geral --- */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
             background: var(--bg);
@@ -183,7 +187,10 @@
         }
 
         @media (max-width: 768px) {
-            .unit-grid { grid-template-columns: 1fr; } 
+            .unit-grid { 
+                grid-template-columns: repeat(6, 1fr); 
+                gap: 5px;
+            } 
 
             .modal-content {
                 width: 100%;
@@ -271,24 +278,20 @@ let globalTeams = [];
 
 function loadDatabase() {
     try {
-        // As variáveis 'units' e 'teams' vêm dos arquivos database/units.js e database/teams.js
-        
-        // 1. Processa as unidades
         globalUnits = {};
         for (const name in units) {
             globalUnits[name] = {
                 ...units[name],
-                name: name // Garante que o nome da chave seja uma propriedade para o modal/imagem
+                name: name 
             };
         }
 
-        // 2. Processa os times do formato de objeto para o formato de array que o renderTeams usa
         globalTeams = Object.keys(teams).map(teamName => {
             const t = teams[teamName];
             return {
-                title: { pt: teamName, en: teamName }, // Fallback para o nome do time
+                title: { pt: teamName, en: teamName },
                 units: [t.slot1, t.slot2, t.slot3, t.slot4, t.slot5, t.slot6],
-                dps: "Stats N/A" // Valor padrão caso não tenha no seu JS
+                dps: "Stats N/A"
             };
         });
 
@@ -304,10 +307,6 @@ function renderTeams() {
     const ui = uiText[lang];
 
     if (globalTeams.length === 0) {
-        const emptyBlock = document.createElement('div');
-        emptyBlock.className = 'team-block';
-        emptyBlock.textContent = ui.noTeams;
-        container.appendChild(emptyBlock);
         document.getElementById('langBtn').textContent = ui.btn;
         return;
     }
