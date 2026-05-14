@@ -9,7 +9,7 @@
     <script src="menu.js" defer></script>
 
     <style>
-        /* --- Variáveis e Temas (Mantidos conforme solicitado) --- */
+        /* --- Variáveis e Temas --- */
         :root {
             --bg: #f2f4f7;
             --card: #ffffff;
@@ -68,6 +68,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            /* Cada time agora fica dentro de um Container visível */
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .team-title {
@@ -86,17 +92,17 @@
             width: 100%;
         }
 
-        /* Container do Slot (para permitir arrastar/scroll) */
+        /* Container do Slot */
         .unit-slot {
             aspect-ratio: 1 / 1;
-            background: var(--card);
+            background: var(--bg);
             border: 2px solid var(--border);
             border-radius: 12px;
-            overflow-y: auto; /* Permite o scroll vertical */
+            overflow-y: auto;
             scroll-snap-type: y mandatory;
-            scrollbar-width: none; /* Esconde scroll no Firefox */
+            scrollbar-width: none;
         }
-        .unit-slot::-webkit-scrollbar { display: none; } /* Esconde scroll no Chrome/Safari */
+        .unit-slot::-webkit-scrollbar { display: none; }
 
         .unit-card {
             height: 100%;
@@ -140,7 +146,7 @@
             color: var(--text);
         }
 
-        /* --- Modal (Adaptado do original) --- */
+        /* --- Modal --- */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -175,7 +181,9 @@
         }
 
         @media (max-width: 768px) {
-            .unit-grid { grid-template-columns: repeat(3, 1fr); } /* 3x2 no mobile para visibilidade */
+            /* Alterado para 1x6 no mobile (1 coluna) */
+            .unit-grid { grid-template-columns: 1fr; } 
+            
             .modal-content {
                 width: 100%;
                 bottom: 0; left: 0;
@@ -187,13 +195,27 @@
         }
 
         .modal-unit-img { width: 120px; height: 120px; margin-bottom: 15px; }
+        
+        .trait-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .trait-img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
         .trait-tag {
             background: var(--trait-color);
             color: white;
             padding: 8px 15px;
             border-radius: 8px;
             font-weight: bold;
-            margin-top: 10px;
         }
 
         /* --- Idioma --- */
@@ -219,13 +241,13 @@
 <body>
 
 <header class="header">
-    <!-- Nome alterado conforme solicitado -->
-    <h1 style="color: var(--primary); font-size: 28px;">ANIME VANGUARDS</h1>
+    <!-- Título alterado para imagem conforme solicitado -->
+    <img src="assets/Av_logo.png" alt="Anime Vanguards Logo" class="logo">
 </header>
 
 <main>
     <div class="teams-container" id="teamsContainer">
-        <!-- As composições serão geradas via JavaScript -->
+        <!-- Gerado via JS -->
     </div>
 </main>
 
@@ -233,34 +255,10 @@
     <button id="langBtn" onclick="toggleLang()"></button>
 </div>
 
-<!-- Modal para detalhes da Unit -->
 <div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
 <div id="modalContent" class="modal-content"></div>
 
 <script>
-/* 
-   DATABASE DE EXEMPLO 
-   Estrutura: cada comp tem um título, dps e 6 slots.
-   Cada slot pode ser uma única unit ou uma Array de units (para o sistema de arrastar).
-*/
-const teamsData = [
-    {
-        title: { pt: "Meta Story Mode", en: "Meta Story Mode" },
-        dps: "1.2M+",
-        units: [
-            { name: "Song Jinwu", trait: "Solar", img: "assets/sprites/1.png" }, // Exemplo de unit única
-            [ 
-                { name: "Vogita", trait: "Evolved", img: "assets/sprites/2.png" }, 
-                { name: "Igris", trait: "Shadow", img: "assets/sprites/3.png" } 
-            ], // Exemplo de slot com troca (arrastar)
-            { name: "Cha-In", trait: "Monarch", img: "assets/sprites/4.png" },
-            { name: "Genas", trait: "Overdrive", img: "assets/sprites/5.png" },
-            { name: "Rukia", trait: "Ice Queen", img: "assets/sprites/6.png" },
-            { name: "Alucard", trait: "Vampiric", img: "assets/sprites/7.png" }
-        ]
-    }
-];
-
 let lang = localStorage.getItem("siteLang") || "pt";
 
 const uiText = {
@@ -268,12 +266,32 @@ const uiText = {
     en: { btn: "🇺🇸 EN", dpsLabel: "Total DPS: ", bestTrait: "Best Trait: " }
 };
 
+// Variáveis para armazenar os dados carregados do banco
+let globalUnits = {};
+let globalTeams = [];
+
+async function loadDatabase() {
+    try {
+        // Busca os dados das unidades (traits ideais, etc)
+        const unitsRes = await fetch('database/units.json');
+        globalUnits = await unitsRes.json();
+
+        // Busca os dados das composições de times
+        const teamsRes = await fetch('database/teams.json');
+        globalTeams = await teamsRes.json();
+
+        renderTeams();
+    } catch (error) {
+        console.error("Erro ao carregar banco de dados:", error);
+    }
+}
+
 function renderTeams() {
     const container = document.getElementById('teamsContainer');
     container.innerHTML = "";
     const ui = uiText[lang];
 
-    teamsData.forEach(team => {
+    globalTeams.forEach(team => {
         const block = document.createElement('div');
         block.className = 'team-block';
 
@@ -284,20 +302,23 @@ function renderTeams() {
         const grid = document.createElement('div');
         grid.className = 'unit-grid';
 
-        team.units.forEach(slot => {
+        team.units.forEach(unitNameOrArray => {
             const slotDiv = document.createElement('div');
             slotDiv.className = 'unit-slot';
 
-            // Se for uma array, cria múltiplas unidades no mesmo slot para o "arrastar"
-            const unitsInSlot = Array.isArray(slot) ? slot : [slot];
+            const unitsInSlot = Array.isArray(unitNameOrArray) ? unitNameOrArray : [unitNameOrArray];
             
-            unitsInSlot.forEach((unit, index) => {
+            unitsInSlot.forEach((name, index) => {
+                // Pega os dados extras da unidade no banco de units
+                const unitData = globalUnits[name] || { name: name, trait: "Common" };
+                
                 const unitCard = document.createElement('div');
                 unitCard.className = 'unit-card';
-                unitCard.onclick = () => openModal(unit);
+                unitCard.onclick = () => openModal(unitData);
                 
+                // Imagem vindo de /assets/units/
                 unitCard.innerHTML = `
-                    <img src="${unit.img}" onerror="this.src='assets/sem_icone.png'">
+                    <img src="assets/units/${name}.png" onerror="this.src='assets/sem_icone.png'">
                     ${unitsInSlot.length > 1 && index === 0 ? '<div class="swap-indicator">▼ swap</div>' : ''}
                 `;
                 slotDiv.appendChild(unitCard);
@@ -326,9 +347,12 @@ function openModal(unit) {
 
     modal.innerHTML = `
         <h2 style="margin: 0; color: var(--primary);">${unit.name}</h2>
-        <img src="${unit.img}" class="modal-unit-img" onerror="this.src='assets/sem_icone.png'">
+        <img src="assets/units/${unit.name}.png" class="modal-unit-img" onerror="this.src='assets/sem_icone.png'">
         <div style="font-weight: bold; opacity: 0.8;">${ui.bestTrait}</div>
-        <div class="trait-tag">${unit.trait}</div>
+        <div class="trait-container">
+            <img src="assets/traits/${unit.trait}.png" class="trait-img" onerror="this.style.display='none'">
+            <div class="trait-tag">${unit.trait}</div>
+        </div>
         <p style="margin-top: 20px; font-size: 14px; opacity: 0.7;">Clique fora para fechar</p>
     `;
 
@@ -351,7 +375,7 @@ function toggleLang() {
     renderTeams();
 }
 
-window.onload = renderTeams;
+window.onload = loadDatabase;
 </script>
 
 </body>
