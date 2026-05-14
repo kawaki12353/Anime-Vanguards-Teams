@@ -1,4 +1,4 @@
-const units = {
+const teams = {
     "Ninjutsu Team": {
         slot1: "Shinobi Sage (Friendship)",
         slot2: "Agony Shinobi (Force)",
