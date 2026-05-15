@@ -1,5 +1,6 @@
 const teams = {
     "Ninjutsu Team": {
+        dps: "24mi",
         slot1: "Shinobi Sage (Friendship)",
         slot2: "Agony Shinobi (Force)",
         slot3: "Shinobi God (Infinite Dreams)",
