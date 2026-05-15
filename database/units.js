@@ -1,4 +1,24 @@
 const units = {
+    "Strongest Shinobi (Martial)": {
+        trait: "Monarch",
+        image: "Strongest_Shinobi_(Martial).png",
+        memoria: "All I've Got"
+    },
+    "Manipulator (Spider)": {
+        trait: "Blitz",
+        image: "Shinobi_Sage.png",
+        memoria: "Along Came a Spider"
+    },
+    "Hebano (Clematis)": {
+        trait: "Monarch",
+        image: "Shinobi_Sage.png",
+        memoria: "Trust of Others"
+    },
+    "Senator (Nanomachines)": {
+        trait: "Monarch",
+        image: "Shinobi_Sage.png",
+        memoria: "Trust of Others"
+    },
     "Shinobi Sage (Friendship)": {
         trait: "Monarch",
         image: "Shinobi_Sage.png",
