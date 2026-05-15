@@ -7,7 +7,7 @@ const units = {
     "Manipulator (Spider)": {
         trait: "Blitz",
         image: "Manipulator_(Spider).png",
-        memoria: "Along Came a Spider"
+        memoria: "Ultimate Deceiver"
     },
     "Hebano (Clematis)": {
         trait: "Deadeye",
