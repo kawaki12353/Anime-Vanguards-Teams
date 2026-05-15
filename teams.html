@@ -329,14 +329,14 @@ function renderTeams() {
             const unitsInSlot = Array.isArray(unitNameOrArray) ? unitNameOrArray : [unitNameOrArray];
 
             unitsInSlot.forEach((name, index) => {
-                const unitData = globalUnits[name] || { name: name, trait: "Common" };
+                const unitData = globalUnits[name] || { name: name, trait: "Common", image: "sem_icone.png" };
 
                 const unitCard = document.createElement('div');
                 unitCard.className = 'unit-card';
                 unitCard.onclick = () => openModal(unitData);
 
                 unitCard.innerHTML = `
-                    <img src="assets/units/${name}.png" onerror="this.src='assets/sem_icone.png'">
+                    <img src="assets/units/${unitData.image}" onerror="this.src='assets/sem_icone.png'">
                     ${unitsInSlot.length > 1 && index === 0 ? '<div class="swap-indicator">▼ swap</div>' : ''}
                 `;
                 slotDiv.appendChild(unitCard);
@@ -365,7 +365,7 @@ function openModal(unit) {
 
     modal.innerHTML = `
         <h2 style="margin: 0; color: var(--primary);">${unit.name}</h2>
-        <img src="assets/units/${unit.name}.png" class="modal-unit-img" onerror="this.src='assets/sem_icone.png'">
+        <img src="assets/units/${unit.image}" class="modal-unit-img" onerror="this.src='assets/sem_icone.png'">
         <div style="font-weight: bold; opacity: 0.8;">${ui.bestTrait}</div>
         <div class="trait-container">
             <img src="assets/traits/${unit.trait}.png" class="trait-img" onerror="this.style.display='none'">
