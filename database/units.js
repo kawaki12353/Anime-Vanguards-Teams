@@ -10,12 +10,12 @@ const units = {
         memoria: "Along Came a Spider"
     },
     "Hebano (Clematis)": {
-        trait: "Monarch",
+        trait: "Deadeye",
         image: "Hebano_(Clematis).png",
         memoria: "DoT Amplifier"
     },
     "Senator (Nanomachines)": {
-        trait: "Monarch",
+        trait: "Deadeye",
         image: "Senator_(Nanomachines).png",
         memoria: "Company Captain's Presence"
     },
