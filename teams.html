@@ -128,13 +128,12 @@
             object-fit: contain;
         }
 
-        /* Ícone da Trait no canto superior esquerdo do slot */
-        .mini-trait-img {
+        .slot-trait-img {
             position: absolute;
             top: 6px;
             left: 6px;
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
             object-fit: contain;
             z-index: 2;
         }
@@ -348,7 +347,7 @@ function renderTeams() {
                 unitCard.onclick = () => openModal(unitData);
 
                 unitCard.innerHTML = `
-                    <img src="assets/traits/${unitData.trait}.png" class="mini-trait-img" onerror="this.style.display='none'">
+                    <img src="assets/traits/${unitData.trait}.png" class="slot-trait-img" onerror="this.style.display='none'">
                     <img src="assets/units/${unitData.image}" onerror="this.src='assets/sem_icone.png'">
                     ${unitsInSlot.length > 1 && index === 0 ? '<div class="swap-indicator">▼ swap</div>' : ''}
                 `;
