@@ -291,7 +291,7 @@ function loadDatabase() {
             return {
                 title: { pt: teamName, en: teamName },
                 units: [t.slot1, t.slot2, t.slot3, t.slot4, t.slot5, t.slot6],
-                dps: "Stats N/A"
+                dps: t.dps || "Stats N/A"
             };
         });
 
