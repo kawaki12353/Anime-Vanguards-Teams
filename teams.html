@@ -128,12 +128,13 @@
             object-fit: contain;
         }
 
-        .mini-trait-icon {
+        /* Ícone da Trait no canto superior esquerdo do slot */
+        .mini-trait-img {
             position: absolute;
-            top: 4px;
-            left: 4px;
-            width: 20px;
-            height: 20px;
+            top: 6px;
+            left: 6px;
+            width: 18px;
+            height: 18px;
             object-fit: contain;
             z-index: 2;
         }
@@ -216,8 +217,9 @@
 
         .trait-container {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
+            justify-content: center;
             gap: 10px;
             margin-top: 10px;
         }
@@ -346,7 +348,7 @@ function renderTeams() {
                 unitCard.onclick = () => openModal(unitData);
 
                 unitCard.innerHTML = `
-                    <img src="assets/traits/${unitData.trait}.png" class="mini-trait-icon" onerror="this.style.display='none'">
+                    <img src="assets/traits/${unitData.trait}.png" class="mini-trait-img" onerror="this.style.display='none'">
                     <img src="assets/units/${unitData.image}" onerror="this.src='assets/sem_icone.png'">
                     ${unitsInSlot.length > 1 && index === 0 ? '<div class="swap-indicator">▼ swap</div>' : ''}
                 `;
@@ -377,10 +379,7 @@ function openModal(unit) {
     modal.innerHTML = `
         <h2 style="margin: 0; color: var(--primary);">${unit.name}</h2>
         <img src="assets/units/${unit.image}" class="modal-unit-img" onerror="this.src='assets/sem_icone.png'">
-        <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: bold; opacity: 0.8;">
-            <img src="assets/traits/${unit.trait}.png" style="width: 20px; height: 20px; object-fit: contain;" onerror="this.style.display='none'">
-            <span>${ui.bestTrait}</span>
-        </div>
+        <div style="font-weight: bold; opacity: 0.8;">${ui.bestTrait}</div>
         <div class="trait-container">
             <img src="assets/traits/${unit.trait}.png" class="trait-img" onerror="this.style.display='none'">
             <div class="trait-tag">${unit.trait}</div>
