@@ -12,12 +12,12 @@ const units = {
     "Hebano (Clematis)": {
         trait: "Monarch",
         image: "Hebano_(Clematis).png",
-        memoria: "Trust of Others"
+        memoria: "DoT Amplifier"
     },
     "Senator (Nanomachines)": {
         trait: "Monarch",
         image: "Senator_(Nanomachines).png",
-        memoria: "Trust of Others"
+        memoria: "Company Captain's Presence"
     },
     "Shinobi Sage (Friendship)": {
         trait: "Monarch",
