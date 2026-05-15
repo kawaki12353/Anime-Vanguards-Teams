@@ -1,7 +1,7 @@
 const teams = {
     "Burn Team": {
         dps: "23mi",
-        slot1: "Strongest Shinobi Martial",
+        slot1: "Strongest Shinobi (Martial)",
         slot2: "Agony Shinobi (Force)",
         slot3: "Alocard (Vampire King)",
         slot4: "Hebano (Clematis)",
