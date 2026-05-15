@@ -6,17 +6,17 @@ const units = {
     },
     "Manipulator (Spider)": {
         trait: "Blitz",
-        image: "Shinobi_Sage.png",
+        image: "Manipulator_(Spider).png",
         memoria: "Along Came a Spider"
     },
     "Hebano (Clematis)": {
         trait: "Monarch",
-        image: "Shinobi_Sage.png",
+        image: "Hebano_(Clematis).png",
         memoria: "Trust of Others"
     },
     "Senator (Nanomachines)": {
         trait: "Monarch",
-        image: "Shinobi_Sage.png",
+        image: "Senator_(Nanomachines).png",
         memoria: "Trust of Others"
     },
     "Shinobi Sage (Friendship)": {
