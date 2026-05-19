@@ -100,37 +100,28 @@
             align-items: flex-start; /* Nome do Time para a Esquerda */
             background: var(--card);
             border: 1px solid var(--border);
-            padding: 25px;
+            padding: 25px 0; /* Padding lateral zerado para o container interno encostar nas bordas */
             border-radius: 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            position: relative;
         }
 
         .team-title {
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 15px;
+            margin-left: 25px; /* Compensa o padding do pai */
             color: var(--primary);
             text-transform: uppercase;
             letter-spacing: 1px;
-            width: 100%;
         }
 
-        /* Barra de separação que cruza o container principal de ponta a ponta */
-        .team-divider {
-            width: calc(100% + 50px);
-            margin-left: -25px;
-            border: 0;
+        /* Novo Container para os Slots (Preto, indo de ponta a ponta, sem cantos redondos) */
+        .slots-full-container {
+            width: 100%;
+            background: #000000;
             border-top: 1px solid var(--border);
-            margin-bottom: 20px;
-        }
-
-        /* Container interno preto para os Slots */
-        .slots-wrapper {
-            background-color: #000000;
-            width: 100%;
-            padding: 15px;
-            border-radius: 14px;
+            border-bottom: 1px solid var(--border);
+            padding: 15px 25px; /* Adiciona o recuo necessário para a grid interna */
         }
 
         .unit-grid {
@@ -145,9 +136,13 @@
             background: var(--bg);
             border: 2px solid var(--border);
             border-radius: 12px;
-            overflow: hidden; /* Alterado de overflow-y: auto para evitar quebra com a moldura saindo */
-            position: relative;
+            overflow-y: auto;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none;
+            width: 85%; /* Reduzido em 15% */
+            margin: 0 auto; /* Centraliza o slot reduzido na grid */
         }
+        .unit-slot::-webkit-scrollbar { display: none; }
 
         .unit-card {
             height: 100%;
@@ -155,96 +150,57 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            scroll-snap-align: start;
             cursor: pointer;
             position: relative;
             flex-shrink: 0;
         }
 
-        .unit-card img.unit-main-img {
-            width: 72.25%; /* Diminuído em 15% (85% * 0.85) */
-            height: 72.25%; /* Diminuído em 15% (85% * 0.85) */
+        .unit-card img {
+            width: 85%;
+            height: 85%;
             object-fit: contain;
         }
 
-        /* Estrutura das Molduras Redondas dos Elementos nos Slots */
-        .slot-elements-container {
+        /* Estrutura das Molduras dos Elementos (Canto Inferior Direito) */
+        .elements-wrapper {
             position: absolute;
-            bottom: -2px;
-            right: -2px;
-            width: 32px;
-            height: 32px;
+            bottom: -6px;
+            right: -6px;
+            width: 34px;
+            height: 34px;
             z-index: 5;
         }
 
-        .slot-element-frame {
+        .element-frame {
             position: absolute;
-            width: 24px;
-            height: 24px;
-            background: #2a2a2a;
-            border: 2px solid #555555; /* Borda cinza escuro */
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
+            background: #181c24; /* Fundo escuro para destacar o elemento */
+            border: 2px solid #555555; /* Borda cinza escura */
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
         }
 
-        .slot-element-frame img {
+        .element-frame img {
             width: 85%;
             height: 85%;
             object-fit: contain;
         }
 
-        /* Posicionamento quando há 2 elementos */
-        .slot-element-frame.frame-1 {
-            bottom: 4px;
-            right: 4px;
-            z-index: 7;
-        }
-
-        .slot-element-frame.frame-2 {
-            bottom: 10px;
-            right: -2px;
-            z-index: 6;
-        }
-
-        /* Estrutura dos Elementos idênticos dentro do Modal */
-        .modal-elements-container {
-            position: relative;
-            width: 50px;
-            height: 50px;
-            margin-top: 10px;
-        }
-
-        .modal-element-frame {
-            position: absolute;
-            width: 38px;
-            height: 38px;
-            background: #2a2a2a;
-            border: 2px solid #555555;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .modal-element-frame img {
-            width: 85%;
-            height: 85%;
-            object-fit: contain;
-        }
-
-        .modal-element-frame.frame-1 {
+        /* Quando há dois elementos */
+        .element-frame.elem-1 {
             bottom: 0;
-            right: 12px;
-            z-index: 7;
+            right: 0;
+            z-index: 2;
         }
 
-        .modal-element-frame.frame-2 {
-            bottom: 8px;
-            right: 2px;
-            z-index: 6;
+        .element-frame.elem-2 {
+            bottom: 60%; /* 60% para cima */
+            right: -60%; /* 60% para a direita */
+            z-index: 1;
         }
 
         .swap-indicator {
@@ -264,6 +220,7 @@
         .team-dps {
             align-self: flex-end; /* DPS para a Direita */
             margin-top: 15px;
+            margin-right: 25px; /* Compensa o padding do pai */
             font-weight: bold;
             font-size: 16px;
             background: var(--border);
@@ -323,14 +280,26 @@
                 grid-template-columns: 1fr; /* 1 coluna para Mobile */
             }
 
+            .team-block {
+                padding: 20px 0;
+            }
+
+            .team-title {
+                margin-left: 20px;
+            }
+
+            .team-dps {
+                margin-right: 20px;
+            }
+
+            .slots-full-container {
+                padding: 10px 20px;
+            }
+
             .unit-grid { 
                 grid-template-columns: repeat(3, 1fr); 
                 gap: 5px;
             } 
-
-            .slots-wrapper {
-                padding: 10px;
-            }
 
             .modal-content {
                 width: 100%;
@@ -342,7 +311,7 @@
             .modal-content.open { transform: translateY(0); }
         }
 
-        .modal-unit-img { width: 120px; height: 120px; margin-bottom: 15px; }
+        .modal-unit-img { width: 120px; height: 120px; margin-bottom: 0; }
 
         .trait-container {
             display: flex;
@@ -398,7 +367,7 @@
 
 <main>
     <div class="teams-container" id="teamsContainer">
-        </div>
+    </div>
 </main>
 
 <div class="lang-toggle">
@@ -451,29 +420,28 @@ function loadDatabase() {
     }
 }
 
-// Função auxiliar para renderizar a estrutura de elementos/molduras redondas de forma idêntica
-function generateElementsHTML(unitData, isModal = false) {
+// Função auxiliar para gerar o HTML das molduras redondas dos elementos
+function getElementsHTML(unitData) {
     if (!unitData.elements) return '';
     
     const elementsArray = Array.isArray(unitData.elements) ? unitData.elements : [unitData.elements];
-    const prefix = isModal ? 'modal' : 'slot';
     
     if (elementsArray.length === 1) {
         return `
-            <div class="${prefix}-elements-container">
-                <div class="${prefix}-element-frame frame-1">
-                    <img src="assets/elements/${elementsArray[0]}.png" onerror="this.parentNode.style.display='none'">
+            <div class="elements-wrapper">
+                <div class="element-frame elem-1">
+                    <img src="assets/elements/${elementsArray[0]}.png" onerror="this.parentElement.style.display='none'">
                 </div>
             </div>
         `;
-    } else if (elementsArray.length >= 2) {
+    } else if (elementsArray.length > 1) {
         return `
-            <div class="${prefix}-elements-container">
-                <div class="${prefix}-element-frame frame-2">
-                    <img src="assets/elements/${elementsArray[1]}.png" onerror="this.parentNode.style.display='none'">
+            <div class="elements-wrapper">
+                <div class="element-frame elem-2">
+                    <img src="assets/elements/${elementsArray[1]}.png" onerror="this.parentElement.style.display='none'">
                 </div>
-                <div class="${prefix}-element-frame frame-1">
-                    <img src="assets/elements/${elementsArray[0]}.png" onerror="this.parentNode.style.display='none'">
+                <div class="element-frame elem-1">
+                    <img src="assets/elements/${elementsArray[0]}.png" onerror="this.parentElement.style.display='none'">
                 </div>
             </div>
         `;
@@ -510,11 +478,9 @@ function renderTeams() {
         title.className = 'team-title';
         title.textContent = team.title[lang];
 
-        const divider = document.createElement('hr');
-        divider.className = 'team-divider';
-
-        const wrapper = document.createElement('div');
-        wrapper.className = 'slots-wrapper';
+        // Cria o novo container contínuo de ponta a ponta
+        const slotsContainer = document.createElement('div');
+        slotsContainer.className = 'slots-full-container';
 
         const grid = document.createElement('div');
         grid.className = 'unit-grid';
@@ -532,10 +498,10 @@ function renderTeams() {
                 unitCard.className = 'unit-card';
                 unitCard.onclick = () => openModal(unitData);
 
-                // Removida a imagem da trait (.slot-trait-img) e adicionada a moldura redonda do elemento
+                // Removida a foto da trait no topo-esquerdo e injetada as molduras redondas de elementos no canto inferior-direito
                 unitCard.innerHTML = `
-                    <img src="assets/units/${unitData.image}" class="unit-main-img" onerror="this.src='assets/sem_icone.png'">
-                    ${generateElementsHTML(unitData, false)}
+                    <img src="assets/units/${unitData.image}" onerror="this.src='assets/sem_icone.png'">
+                    ${getElementsHTML(unitData)}
                     ${unitsInSlot.length > 1 && index === 0 ? '<div class="swap-indicator">▼ swap</div>' : ''}
                 `;
                 slotDiv.appendChild(unitCard);
@@ -544,14 +510,14 @@ function renderTeams() {
             grid.appendChild(slotDiv);
         });
 
+        slotsContainer.appendChild(grid);
+
         const dps = document.createElement('div');
         dps.className = 'team-dps';
         dps.textContent = `${ui.dpsLabel} ~ ${team.dps}`;
 
         block.appendChild(title);
-        block.appendChild(divider);
-        wrapper.appendChild(grid);
-        block.appendChild(wrapper);
+        block.appendChild(slotsContainer);
         block.appendChild(dps);
         container.appendChild(block);
     });
@@ -568,12 +534,12 @@ function openModal(unit) {
     overlay.style.display = "block"; 
     modal.style.display = "flex";
 
-    // Modificado o modal para embutir as molduras redondas dos elementos idênticas aos slots
+    // Adicionado o container wrapper de posição relativa na foto do modal para renderizar as molduras dos elementos iguaizinhas às da Unit no grid
     modal.innerHTML = `
         <div style="display: flex; align-items: center; gap: 20px; width: 100%; text-align: left;">
-            <div style="position: relative; flex-shrink: 0; width: 120px; height: 120px; background: var(--bg); border: 2px solid var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                <img src="assets/units/${unit.image}" style="width: 72.25%; height: 72.25%; object-fit: contain; margin-bottom: 0;" onerror="this.src='assets/sem_icone.png'">
-                ${generateElementsHTML(unit, false)}
+            <div style="position: relative; width: 120px; height: 120px; flex-shrink: 0;">
+                <img src="assets/units/${unit.image}" class="modal-unit-img" style="width:100%; height:100%; object-fit:contain;" onerror="this.src='assets/sem_icone.png'">
+                ${getElementsHTML(unit)}
             </div>
             <div style="display: flex; flex-direction: column; gap: 5px;">
                 <h2 style="margin: 0; color: var(--primary);">${unit.name}</h2>
