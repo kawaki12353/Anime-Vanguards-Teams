@@ -114,26 +114,26 @@
             letter-spacing: 1px;
         }
 
-        /* Linha divisória entre o título e o container dos slots */
+        /* Linha divisória entre o título e os slots */
         .team-divider {
             width: 100%;
             border: 0;
             border-top: 2px solid var(--border);
-            margin-bottom: 20px;
+            margin: 0 0 20px 0;
         }
 
-        /* Novo container interno que envelopa o grid e possui fundo preto */
-        .slots-inner-container {
-            width: 100%;
+        /* Novo container interno preto para agrupar os slots */
+        .slots-wrapper-container {
             background-color: #000000;
-            padding: 20px;
+            width: 100%;
+            padding: 15px;
             border-radius: 15px;
         }
 
         .unit-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr); /* 3x2 para PC */
-            gap: 15px;
+            gap: 10px;
             width: 100%;
         }
 
@@ -145,9 +145,7 @@
             overflow-y: auto;
             scroll-snap-type: y mandatory;
             scrollbar-width: none;
-            /* Diminuído o tamanho dos slots em 30% mantendo a proporção */
-            width: 70%;
-            margin: 0 auto;
+            transform: scale(0.85); /* Diminui o tamanho do slot em 15% */
         }
         .unit-slot::-webkit-scrollbar { display: none; }
 
@@ -169,61 +167,56 @@
             object-fit: contain;
         }
 
-        /* Estilo para as Molduras Redondas no canto inferior direito */
-        .elements-frame-container {
+        /* Container para as molduras dos elementos */
+        .element-frame-container {
             position: absolute;
-            bottom: 4px;
-            right: 4px;
-            width: 28px;
-            height: 28px;
+            bottom: -5px;
+            right: -5px;
+            width: 32px;
+            height: 32px;
             z-index: 3;
         }
 
-        .element-round-frame {
+        /* Molduras circulares dos elementos */
+        .element-frame {
             position: absolute;
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1.5px solid #fff;
-            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+            background: #222;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
         }
 
-        .element-round-frame img {
-            width: 85%;
-            height: 85%;
+        .element-frame img {
+            width: 90% !important;
+            height: 90% !important;
             object-fit: contain;
         }
 
-        /* Posicionamento quando houver 2 elementos */
-        .element-frame-1 {
+        /* Posicionamento quando há 2 elementos */
+        .element-frame.frame-1 {
             bottom: 0;
-            right: 4px;
+            right: 0;
             z-index: 5;
         }
 
-        .element-frame-2 {
-            bottom: 4px;
-            right: 0;
+        .element-frame.frame-2 {
+            bottom: 8px;
+            right: -8px;
             z-index: 4;
         }
 
         .swap-indicator {
             position: absolute;
             bottom: 4px;
-            left: 4px;
-            font-size: 8px;
-            opacity: 0.7;
-            background: rgba(0,0,0,0.6);
-            color: #fff;
-            padding: 1px 3px;
-            border-radius: 4px;
+            font-size: 10px;
+            opacity: 0.5;
             animation: bounce 2s infinite;
-            z-index: 6;
         }
 
         @keyframes bounce {
@@ -447,13 +440,13 @@ function renderTeams() {
         title.className = 'team-title';
         title.textContent = team.title[lang];
 
-        // Barra divisória adicionada logo abaixo do título do time
+        // Criação da barra separadora entre o Título e o Container de Slots
         const divider = document.createElement('hr');
         divider.className = 'team-divider';
 
-        // Novo container interno preto criado para acomodar os slots
-        const slotsInnerContainer = document.createElement('div');
-        slotsInnerContainer.className = 'slots-inner-container';
+        // Novo wrapper container preto para envelopar a grid de slots
+        const slotsWrapper = document.createElement('div');
+        slotsWrapper.className = 'slots-wrapper-container';
 
         const grid = document.createElement('div');
         grid.className = 'unit-grid';
@@ -471,7 +464,7 @@ function renderTeams() {
                 unitCard.className = 'unit-card';
                 unitCard.onclick = () => openModal(unitData);
 
-                // Lógica para tratar os elementos da Unit dinamicamente
+                // Tratamento e normalização do campo "elements" da Unit
                 let elementsArray = [];
                 if (unitData.elements) {
                     if (Array.isArray(unitData.elements)) {
@@ -481,27 +474,27 @@ function renderTeams() {
                     }
                 }
 
-                let elementsHTML = '<div class="elements-frame-container">';
+                // Construção das estruturas das molduras redondas dos elementos
+                let elementsHTML = '<div class="element-frame-container">';
                 if (elementsArray.length === 1) {
                     elementsHTML += `
-                        <div class="element-round-frame" style="bottom:0; right:0;">
+                        <div class="element-frame frame-1">
                             <img src="assets/elements/${elementsArray[0]}.png" onerror="this.parentElement.style.display='none'">
                         </div>
                     `;
                 } else if (elementsArray.length >= 2) {
-                    // Moldura 1 fica na frente (frame-1), Moldura 2 fica logo atrás, um pouco pra direita e pra cima (frame-2)
                     elementsHTML += `
-                        <div class="element-round-frame element-frame-2">
+                        <div class="element-frame frame-2">
                             <img src="assets/elements/${elementsArray[1]}.png" onerror="this.parentElement.style.display='none'">
                         </div>
-                        <div class="element-round-frame element-frame-1">
+                        <div class="element-frame frame-1">
                             <img src="assets/elements/${elementsArray[0]}.png" onerror="this.parentElement.style.display='none'">
                         </div>
                     `;
                 }
                 elementsHTML += '</div>';
 
-                // Renderização do slot sem a foto da trait no canto superior esquerdo, e com os elementos no canto inferior direito
+                // Renderiza o card sem a trait superior esquerda e com as novas molduras no canto inferior direito
                 unitCard.innerHTML = `
                     <img src="assets/units/${unitData.image}" onerror="this.src='assets/sem_icone.png'">
                     ${elementsHTML}
@@ -513,15 +506,16 @@ function renderTeams() {
             grid.appendChild(slotDiv);
         });
 
+        // Montagem estrutural final respeitando os novos containers encadeados
+        slotsWrapper.appendChild(grid);
+
         const dps = document.createElement('div');
         dps.className = 'team-dps';
         dps.textContent = `${ui.dpsLabel} ~ ${team.dps}`;
 
-        // Construindo a nova árvore estrutural do bloco
         block.appendChild(title);
-        block.appendChild(divider); // Adiciona a barra divisória
-        slotsInnerContainer.appendChild(grid); // Insere o grid dentro do container preto
-        block.appendChild(slotsInnerContainer); // Adiciona o container preto ao bloco do time
+        block.appendChild(divider);
+        block.appendChild(slotsWrapper);
         block.appendChild(dps);
         container.appendChild(block);
     });
