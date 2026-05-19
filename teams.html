@@ -114,10 +114,26 @@
             letter-spacing: 1px;
         }
 
+        /* Linha divisória entre o título e o container dos slots */
+        .team-divider {
+            width: 100%;
+            border: 0;
+            border-top: 2px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        /* Novo container interno que envelopa o grid e possui fundo preto */
+        .slots-inner-container {
+            width: 100%;
+            background-color: #000000;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
         .unit-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr); /* 3x2 para PC */
-            gap: 10px;
+            gap: 15px;
             width: 100%;
         }
 
@@ -129,6 +145,9 @@
             overflow-y: auto;
             scroll-snap-type: y mandatory;
             scrollbar-width: none;
+            /* Diminuído o tamanho dos slots em 30% mantendo a proporção */
+            width: 70%;
+            margin: 0 auto;
         }
         .unit-slot::-webkit-scrollbar { display: none; }
 
@@ -150,23 +169,61 @@
             object-fit: contain;
         }
 
-        /* Estilo para a mini foto da Trait por cima da foto da Unit no Grid */
-        .unit-card img.slot-trait-img {
+        /* Estilo para as Molduras Redondas no canto inferior direito */
+        .elements-frame-container {
             position: absolute;
-            top: 4px;
-            left: 4px;
-            width: 28px !important;
-            height: 28px !important;
+            bottom: 4px;
+            right: 4px;
+            width: 28px;
+            height: 28px;
+            z-index: 3;
+        }
+
+        .element-round-frame {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1.5px solid #fff;
+            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .element-round-frame img {
+            width: 85%;
+            height: 85%;
             object-fit: contain;
-            z-index: 2;
+        }
+
+        /* Posicionamento quando houver 2 elementos */
+        .element-frame-1 {
+            bottom: 0;
+            right: 4px;
+            z-index: 5;
+        }
+
+        .element-frame-2 {
+            bottom: 4px;
+            right: 0;
+            z-index: 4;
         }
 
         .swap-indicator {
             position: absolute;
             bottom: 4px;
-            font-size: 10px;
-            opacity: 0.5;
+            left: 4px;
+            font-size: 8px;
+            opacity: 0.7;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            padding: 1px 3px;
+            border-radius: 4px;
             animation: bounce 2s infinite;
+            z-index: 6;
         }
 
         @keyframes bounce {
@@ -390,6 +447,14 @@ function renderTeams() {
         title.className = 'team-title';
         title.textContent = team.title[lang];
 
+        // Barra divisória adicionada logo abaixo do título do time
+        const divider = document.createElement('hr');
+        divider.className = 'team-divider';
+
+        // Novo container interno preto criado para acomodar os slots
+        const slotsInnerContainer = document.createElement('div');
+        slotsInnerContainer.className = 'slots-inner-container';
+
         const grid = document.createElement('div');
         grid.className = 'unit-grid';
 
@@ -400,15 +465,46 @@ function renderTeams() {
             const unitsInSlot = Array.isArray(unitNameOrArray) ? unitNameOrArray : [unitNameOrArray];
 
             unitsInSlot.forEach((name, index) => {
-                const unitData = globalUnits[name] || { name: name, trait: "Common", image: "sem_icone.png" };
+                const unitData = globalUnits[name] || { name: name, trait: "Common", image: "sem_icone.png", elements: [] };
 
                 const unitCard = document.createElement('div');
                 unitCard.className = 'unit-card';
                 unitCard.onclick = () => openModal(unitData);
 
+                // Lógica para tratar os elementos da Unit dinamicamente
+                let elementsArray = [];
+                if (unitData.elements) {
+                    if (Array.isArray(unitData.elements)) {
+                        elementsArray = unitData.elements;
+                    } else {
+                        elementsArray = [unitData.elements];
+                    }
+                }
+
+                let elementsHTML = '<div class="elements-frame-container">';
+                if (elementsArray.length === 1) {
+                    elementsHTML += `
+                        <div class="element-round-frame" style="bottom:0; right:0;">
+                            <img src="assets/elements/${elementsArray[0]}.png" onerror="this.parentElement.style.display='none'">
+                        </div>
+                    `;
+                } else if (elementsArray.length >= 2) {
+                    // Moldura 1 fica na frente (frame-1), Moldura 2 fica logo atrás, um pouco pra direita e pra cima (frame-2)
+                    elementsHTML += `
+                        <div class="element-round-frame element-frame-2">
+                            <img src="assets/elements/${elementsArray[1]}.png" onerror="this.parentElement.style.display='none'">
+                        </div>
+                        <div class="element-round-frame element-frame-1">
+                            <img src="assets/elements/${elementsArray[0]}.png" onerror="this.parentElement.style.display='none'">
+                        </div>
+                    `;
+                }
+                elementsHTML += '</div>';
+
+                // Renderização do slot sem a foto da trait no canto superior esquerdo, e com os elementos no canto inferior direito
                 unitCard.innerHTML = `
-                    <img src="assets/traits/${unitData.trait}.png" class="slot-trait-img" onerror="this.style.display='none'">
                     <img src="assets/units/${unitData.image}" onerror="this.src='assets/sem_icone.png'">
+                    ${elementsHTML}
                     ${unitsInSlot.length > 1 && index === 0 ? '<div class="swap-indicator">▼ swap</div>' : ''}
                 `;
                 slotDiv.appendChild(unitCard);
@@ -421,8 +517,11 @@ function renderTeams() {
         dps.className = 'team-dps';
         dps.textContent = `${ui.dpsLabel} ~ ${team.dps}`;
 
+        // Construindo a nova árvore estrutural do bloco
         block.appendChild(title);
-        block.appendChild(grid);
+        block.appendChild(divider); // Adiciona a barra divisória
+        slotsInnerContainer.appendChild(grid); // Insere o grid dentro do container preto
+        block.appendChild(slotsInnerContainer); // Adiciona o container preto ao bloco do time
         block.appendChild(dps);
         container.appendChild(block);
     });
@@ -465,10 +564,10 @@ function openModal(unit) {
 function closeModal() {
     const modal = document.getElementById('modalContent');
     const overlay = document.getElementById('modalOverlay');
-    
+
     modal.classList.remove('open');
     overlay.classList.remove('active');
-    
+
     // Espera a animação terminar para esconder o elemento (300ms)
     setTimeout(() => {
         if (!modal.classList.contains('open')) {
