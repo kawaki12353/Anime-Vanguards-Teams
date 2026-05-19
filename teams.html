@@ -352,7 +352,7 @@
         }
 
         .trait-tag {
-            background: var(--trait-color);
+            background: transparent;
             color: white;
             padding: 8px 15px;
             border-radius: 8px;
@@ -580,11 +580,11 @@ function openModal(unit) {
                 ${getElementsHtml(unit)}
             </div>
             <div style="display: flex; flex-direction: column; gap: 5px;">
-                <h2 style="margin: 0;" class="monarch-gradient-text">${unit.name}</h2>
+                <h2 style="margin: 0; color: #ffffff;">${unit.name}</h2>
                 <div style="font-weight: bold; opacity: 0.8; font-size: 14px; margin-top: 5px;">${ui.bestTrait}</div>
                 <div class="trait-container" style="margin-top: 5px;">
                     <img src="assets/traits/${unit.trait}.png" class="trait-img" onerror="this.style.display='none'">
-                    <div class="trait-tag">${unit.trait}</div>
+                    <div class="trait-tag monarch-gradient-text" style="padding: 0; font-size: 16px;">${unit.trait}</div>
                 </div>
             </div>
         </div>
