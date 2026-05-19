@@ -14,7 +14,7 @@
     <style>
         /* --- Variáveis e Temas --- */
         :root {
-            --bg: #f2f4f7;
+            --bg: #fafafa;
             --card: #ffffff;
             --text: #111;
             --border: #ccc;
@@ -27,8 +27,8 @@
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg: #0f1217;
-                --card: #181c24;
+                --bg: #050505;
+                --card: #121212;
                 --text: #ffffff;
                 --border: #2a2f3a;
                 --hover: #232836;
@@ -98,11 +98,17 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start; /* Nome do Time para a Esquerda */
-            background: linear-gradient(to bottom right, #001f4d, #000000); /* Container Principal: Azul bem Escuro degradê para Preto */
+            background: linear-gradient(to bottom right, #ffffff, #fff0f5); /* Modo Claro: Branco da paleta e Rosa bem claro */
             border: 1px solid var(--border);
-            padding: 10px 0 25px 0; /* Diminuída a altura reduzindo o padding superior */
+            padding: 10px 0 15px 0; /* Diminuída a altura reduzindo o padding superior e inferior */
             border-radius: 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .team-block {
+                background: linear-gradient(to bottom right, #001f4d, #000000); /* Modo Escuro: Mantém original */
+            }
         }
 
         .team-title {
@@ -113,6 +119,12 @@
             color: #ffffff; /* Nome do time Branco */
             text-transform: lowercase; /* Letra minúscula normal */
             letter-spacing: 1px;
+        }
+
+        @media (prefers-color-scheme: light) {
+            .team-title {
+                color: #111111; /* Nome do time escuro no modo claro para legibilidade */
+            }
         }
         
         /* Aplica a primeira letra de cada palavra em Maiúscula */
@@ -234,7 +246,7 @@
 
         .team-dps {
             align-self: flex-end; /* DPS para a Direita */
-            margin-top: 15px;
+            margin-top: 8px; /* Diminuído ligeiramente de 15px para 8px para reduzir a altura inferior */
             margin-right: 25px; /* Compensa o recuo do padding removido no bloco pai */
             font-weight: bold;
             font-size: 16px;
@@ -386,6 +398,20 @@
             color: transparent;
             display: inline-block;
             background-color: transparent !important;
+        }
+
+        /* Classe de cor amarela para traits do sistema [2] */
+        .trait-yellow-text {
+            color: #ffeb3b !important;
+            -webkit-text-fill-color: initial !important;
+            background: none !important;
+        }
+
+        /* Classe de cor branca padrão para traits sem identificadores */
+        .trait-white-text {
+            color: #ffffff !important;
+            -webkit-text-fill-color: initial !important;
+            background: none !important;
         }
     </style>
 </head>
@@ -572,6 +598,18 @@ function openModal(unit) {
     overlay.style.display = "block"; 
     modal.style.display = "flex";
 
+    // Sistema de verificação de tags [1] ou [2] no nome da trait
+    let traitNameClean = unit.trait;
+    let traitClass = "trait-white-text";
+
+    if (unit.trait.includes("[1]")) {
+        traitNameClean = unit.trait.replace(/\[1\]/g, "");
+        traitClass = "monarch-gradient-text";
+    } else if (unit.trait.includes("[2]")) {
+        traitNameClean = unit.trait.replace(/\[2\]/g, "");
+        traitClass = "trait-yellow-text";
+    }
+
     // Adicionado os elementos por cima da foto da Unit do mesmo jeito que no Grid
     modal.innerHTML = `
         <div style="display: flex; align-items: center; gap: 20px; width: 100%; text-align: left;">
@@ -584,7 +622,7 @@ function openModal(unit) {
                 <div style="font-weight: bold; opacity: 0.8; font-size: 14px; margin-top: 5px;">${ui.bestTrait}</div>
                 <div class="trait-container" style="margin-top: 5px;">
                     <img src="assets/traits/${unit.trait}.png" class="trait-img" onerror="this.style.display='none'">
-                    <div class="trait-tag monarch-gradient-text" style="padding: 0; font-size: 16px;">${unit.trait}</div>
+                    <div class="trait-tag ${traitClass}" style="padding: 0; font-size: 16px;">${traitNameClean}</div>
                 </div>
             </div>
         </div>
