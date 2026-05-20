@@ -4,12 +4,12 @@ const memorias = {
         "Peak of Shinobi"
     },
     "Secret": {
+        "Perpetual Motion"
         "All I've Got",
         "Ultimate Deceiver",
         "Shall Know Pain",
         "Company Captain's Presence",
         "Trust of Others",
-        "Perpetual Motion"
     },
     "Exclusive": {
         "Soon"
