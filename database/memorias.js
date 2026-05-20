@@ -8,7 +8,8 @@ const memorias = {
         "Ultimate Deceiver",
         "Shall Know Pain",
         "Company Captain's Presence",
-        "Trust of Others"
+        "Trust of Others",
+        "Perpetual Motion"
     },
     "Exclusive": {
         "Soon"
