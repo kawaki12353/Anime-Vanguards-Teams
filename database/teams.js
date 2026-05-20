@@ -1,6 +1,7 @@
 const teams = {
     "Burn Team": {
         dps: "23mi",
+        tags: ["Tower"],
         slot1: "Strongest Shinobi (Martial)",
         slot2: "Agony Shinobi (Force)",
         slot3: "Alocard (Vampire King)",
@@ -10,6 +11,7 @@ const teams = {
     },
     "Ninjutsu Team": {
         dps: "24mi",
+        tags: ["Tower", "Progressive"]
         slot1: "Shinobi Sage (Friendship)",
         slot2: "Agony Shinobi (Force)",
         slot3: "Shinobi God (Infinite Dreams)",
