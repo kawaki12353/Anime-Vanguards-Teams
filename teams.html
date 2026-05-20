@@ -323,17 +323,11 @@
             align-items: center;
         }
 
-        /* Container para agrupar botões do lado esquerdo inferior */
-        .team-buttons-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 8px;
-            margin-left: 25px;
-        }
-
         /* Botão #tags no canto esquerdo inferior */
         .team-tags-btn {
+            align-self: flex-start;
+            margin-top: 8px;
+            margin-left: 25px;
             font-weight: bold;
             font-size: 13px; /* Mesmo tamanho que a letra falando do DPS do time */
             background: rgba(255, 215, 0, 0.2); /* Fundo Amarelo Transparente */
@@ -349,42 +343,16 @@
             transform: scale(1.08); /* Pequenino zoom ao clicar */
         }
 
-        /* Botão do Caloric ao lado esquerdo */
-        .team-caloric-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: bold;
-            font-size: 13px;
-            background: rgba(255, 69, 0, 0.2);
-            border: 1px solid #ff4500;
-            padding: 3px 14px;
-            border-radius: 20px;
-            color: #ff4500;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .team-caloric-btn:active {
-            transform: scale(1.08);
-        }
-
-        .team-caloric-btn img {
-            width: 16px;
-            height: 16px;
-            object-fit: contain;
-        }
-
         /* DPS Rank no canto superior direito */
         .team-rank {
             position: absolute;
             top: 10px;
             right: 22px; /* Vai um pouquinho mais para a direita (de 25px para 22px) */
             font-weight: bold;
-            font-size: 10px; /* Reduzido o tamanho como solicitado */
+            font-size: 10px; /* Reduzido o tamanho da fonte */
             background: rgba(144, 238, 144, 0.2); /* Fundo Verde mais claro transparente (LightGreen) */
             border: 1px solid #90ee90; /* Borda Verde mais claro (LightGreen) */
-            padding: 2px 14px; /* Diminuída um pouquinho a distância do fundo até a letra verticalmente (de 3px para 2px) */
+            padding: 2px 10px; /* Ajustado proporcionalmente ao tamanho menor */
             color: #90ee90; /* Cor da letra Verde mais claro (LightGreen) */
             border-radius: 0px; /* Pontas pontiagudas (não redondas) */
         }
@@ -685,7 +653,7 @@
             overflow: hidden;
             backdrop-filter: blur(2px);
             bottom: 0;
-            right: 0;
+            right: -10px; /* Movido para o lado direito do botão de Tags */
             z-index: 12;
             cursor: pointer;
         }
@@ -709,8 +677,8 @@
             justify-content: center;
             overflow: hidden;
             backdrop-filter: blur(2px);
-            bottom: 10px;
-            right: -10px;
+            bottom: 0;
+            right: 10px; /* Posicionado à esquerda do botão de Skill */
             z-index: 11;
             cursor: pointer;
         }
@@ -719,7 +687,7 @@
             width: 80% !important;
             height: 80% !important;
             object-fit: contain;
-            border-radius: 50% !important; /* Modificado para Círculo */
+            border-radius: 50% !important; /* Modificado para imagem acompanhar o Círculo */
         }
     </style>
 </head>
@@ -1036,7 +1004,7 @@ function renderTeams() {
 
         const title = document.createElement('div');
         title.className = 'team-title';
-        title.textContent = team.title[lang]; // Exibe exatamente igual ao database/teams.js
+        title.textContent = team.title[lang]; // Alterado para exibir exatamente igual ao database/teams.js sem capitalize/lowercase
 
         // Novo Container Preto que estende horizontalmente de ponta a ponta
         const fullSlotsContainer = document.createElement('div');
@@ -1065,7 +1033,34 @@ function renderTeams() {
                     ${unitsInSlot.length > 1 && index === 0 ? '<div class="swap-indicator">▼ swap</div>' : ''}
                 `;
 
-                // Condicional Caloric antiga removida do slot interno de unidades para reposicionamento
+                // Condicional Caloric aplicada para o Lich King (Ruler)
+                if (name === "Lich King (Ruler)" && team.caloric) {
+                    const caloricUnitData = globalUnits[team.caloric] || { name: team.caloric, trait: "Common", image: "sem_icone.png" };
+                    
+                    const caloricWrapper = document.createElement('div');
+                    caloricWrapper.className = 'caloric-wrapper';
+                    
+                    const frameUnit = document.createElement('div');
+                    frameUnit.className = 'caloric-frame-unit';
+                    frameUnit.onclick = (e) => {
+                        e.stopPropagation();
+                        openModal(caloricUnitData);
+                    };
+                    frameUnit.innerHTML = `<img src="assets/units/${caloricUnitData.image}" onerror="this.src='assets/sem_icone.png'">`;
+                    
+                    const frameSkill = document.createElement('div');
+                    frameSkill.className = 'caloric-frame-skill';
+                    frameSkill.onclick = (e) => {
+                        e.stopPropagation();
+                        openModal(caloricUnitData);
+                    };
+                    frameSkill.innerHTML = `<img src="assets/skills/Caloric.png" onerror="this.parentNode.style.display='none'">`;
+                    
+                    caloricWrapper.appendChild(frameUnit);
+                    caloricWrapper.appendChild(frameSkill);
+                    unitCard.appendChild(caloricWrapper);
+                }
+
                 slotDiv.appendChild(unitCard);
             });
 
@@ -1076,34 +1071,16 @@ function renderTeams() {
         const footerDiv = document.createElement('div');
         footerDiv.className = 'team-footer';
 
-        // Container agrupador esquerdo para as tags e botão caloric opcional
-        const buttonsLeftDiv = document.createElement('div');
-        buttonsLeftDiv.className = 'team-buttons-left';
-
         const tagsBtn = document.createElement('div');
         tagsBtn.className = 'team-tags-btn';
         tagsBtn.textContent = '#tags';
         tagsBtn.onclick = () => openTagsModal(team);
-        buttonsLeftDiv.appendChild(tagsBtn);
-
-        // Se houver caloric cadastrado no time, adiciona o botão ao lado direito do #tags
-        if (team.caloric) {
-            const caloricUnitData = globalUnits[team.caloric] || { name: team.caloric, trait: "Common", image: "sem_icone.png" };
-            const caloricBtn = document.createElement('div');
-            caloricBtn.className = 'team-caloric-btn';
-            caloricBtn.onclick = () => openModal(caloricUnitData);
-            caloricBtn.innerHTML = `
-                <img src="assets/skills/Caloric.png" onerror="this.style.display='none'">
-                <span>Caloric</span>
-            `;
-            buttonsLeftDiv.appendChild(caloricBtn);
-        }
 
         const dps = document.createElement('div');
         dps.className = 'team-dps';
         dps.textContent = `${ui.dpsLabel} ~ ${team.dps}`;
 
-        footerDiv.appendChild(buttonsLeftDiv);
+        footerDiv.appendChild(tagsBtn);
         footerDiv.appendChild(dps);
 
         block.appendChild(title);
