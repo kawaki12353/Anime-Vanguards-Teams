@@ -366,6 +366,66 @@
             border-radius: 0px; /* Pontas pontiagudas (não redondas) */
         }
 
+        /* Container absoluto para as molduras do Caloric e sua Unit */
+        .caloric-wrapper {
+            position: absolute;
+            top: 10px;
+            right: 140px; /* Posicionado ao lado esquerdo do DPS Rank */
+            width: 34px;
+            height: 34px;
+            z-index: 10;
+        }
+
+        /* Moldura quadrada e pontiaguda do Caloric */
+        .caloric-frame-skill {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 0px; /* Borda pontiaguda igual um quadrado */
+            border: 1px solid #ffffff; /* Borda branca */
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            backdrop-filter: blur(2px);
+            bottom: 0;
+            right: 0;
+            z-index: 2;
+        }
+
+        .caloric-frame-skill img {
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
+        }
+
+        /* Moldura redonda com foto da Unit do Caloric (um pouquinho pra direita e pra cima) */
+        .caloric-frame-unit {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%; /* Moldura igual dos elementos (redonda) */
+            border: 1px solid #ffffff; /* Borda branca */
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            backdrop-filter: blur(2px);
+            bottom: 10px;
+            right: -10px;
+            z-index: 1;
+            cursor: pointer;
+        }
+
+        .caloric-frame-unit img {
+            width: 85%;
+            height: 85%;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
         /* Estilo das Tags mostradas no Modal */
         .modal-tags-container {
             display: flex;
@@ -754,7 +814,8 @@ function loadDatabase() {
                 title: { pt: teamName, en: teamName },
                 units: [t.slot1, t.slot2, t.slot3, t.slot4, t.slot5, t.slot6],
                 dps: t.dps || "Stats N/A",
-                tags: t.tags || [] // Guardando as tags estruturadas do teams.js
+                tags: t.tags || [], // Guardando as tags estruturadas do teams.js
+                caloric: t.caloric || null
             };
         });
 
@@ -953,6 +1014,25 @@ function renderTeams() {
         rankDiv.className = 'team-rank';
         rankDiv.textContent = `DPS Rank: #${index + 1}`;
         block.appendChild(rankDiv);
+
+        // Renderiza as molduras do Caloric caso exista no database/teams.js para este time
+        if (team.caloric) {
+            const caloricWrapper = document.createElement('div');
+            caloricWrapper.className = 'caloric-wrapper';
+
+            // Busca os dados da unidade vinculada ao Caloric de acordo com o nome especificado
+            const caloricUnitData = globalUnits[team.caloric] || { name: team.caloric, trait: "Common", image: "sem_icone.png" };
+
+            caloricWrapper.innerHTML = `
+                <div class="caloric-frame-unit" onclick="event.stopPropagation(); openModal(globalUnits['${team.caloric.replace(/'/g, "\\'")}'] || { name: '${team.caloric.replace(/'/g, "\\'")}', trait: 'Common', image: 'sem_icone.png' })">
+                    <img src="assets/units/${caloricUnitData.image}" onerror="this.src='assets/sem_icone.png'">
+                </div>
+                <div class="caloric-frame-skill" onclick="event.stopPropagation(); openModal(globalUnits['${team.caloric.replace(/'/g, "\\'")}'] || { name: '${team.caloric.replace(/'/g, "\\'")}', trait: 'Common', image: 'sem_icone.png' })">
+                    <img src="assets/skills/Caloric.png" onerror="this.parentNode.style.display='none'">
+                </div>
+            `;
+            block.appendChild(caloricWrapper);
+        }
 
         const title = document.createElement('div');
         title.className = 'team-title';
