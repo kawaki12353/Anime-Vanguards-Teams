@@ -103,6 +103,7 @@
             padding: 10px 0 15px 0; /* Diminuída a altura reduzindo o padding superior e inferior */
             border-radius: 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative; /* Adicionado para posicionar o Rank de forma absoluta no topo direito */
         }
 
         @media (prefers-color-scheme: dark) {
@@ -250,10 +251,67 @@
             margin-right: 25px; /* Compensa o recuo do padding removido no bloco pai */
             font-weight: bold;
             font-size: 13px; /* Diminuído o tamanho do texto do DPS */
-            background: var(--border);
+            background: rgba(0, 191, 255, 0.2); /* Fundo Azul Claro transparente */
+            border: 1px solid #00bfff; /* Borda Azul Claro */
             padding: 3px 14px; /* Diminuído o preenchimento interno do DPS */
             border-radius: 20px;
-            color: var(--text);
+            color: #ffffff; /* Letra continua Branca */
+        }
+
+        /* Container inferior para organizar o botão #tags e o DPS opostos */
+        .team-footer {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Botão #tags no canto esquerdo inferior */
+        .team-tags-btn {
+            align-self: flex-start;
+            margin-top: 8px;
+            margin-left: 25px;
+            font-weight: bold;
+            font-size: 13px; /* Mesmo tamanho que a letra falando do DPS do time */
+            background: rgba(255, 215, 0, 0.2); /* Fundo Amarelo Transparente */
+            border: 1px solid #ffd700; /* Borda Amarela */
+            padding: 3px 14px; /* Mesma forma do DPS */
+            border-radius: 20px; /* Mesma forma do DPS */
+            color: #ffd700; /* Letra Amarela */
+            cursor: pointer;
+        }
+
+        /* DPS Rank no canto superior direito */
+        .team-rank {
+            position: absolute;
+            top: 10px;
+            right: 25px;
+            font-weight: bold;
+            font-size: 13px; /* Mesmo tamanho que a letra falando do DPS do time */
+            background: rgba(0, 128, 0, 0.2); /* Fundo Verde Transparente */
+            border: 1px solid #008000; /* Borda Verde */
+            padding: 3px 14px;
+            color: #008000; /* Cor da letra Verde */
+            border-radius: 0px; /* Pontas pontiagudas (não redondas) */
+        }
+
+        /* Estilo das Tags mostradas no Modal */
+        .modal-tags-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 15px;
+            width: 100%;
+        }
+        .tag-badge {
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid #ffd700;
+            color: #ffd700;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
         }
 
         /* --- Modal --- */
@@ -539,8 +597,8 @@ let lang = localStorage.getItem("siteLang") || "pt";
 
 // Adicionado os textos estáticos dos títulos "Familiar:" e "Memória:" seguindo a mesma tradução
 const uiText = {
-    pt: { btn: "🇧🇷 PT", dpsLabel: "DPS Total: ", bestTrait: "Melhor Trait: ", familiarLabel: "Familiar: ", memoriaLabel: "Memória: ", noTeams: "Nenhum time aqui ainda", closeMsg: "Clique fora para fechar", searchPlaceholder: "Pesquisar times..." },
-    en: { btn: "🇺🇸 EN", dpsLabel: "Total DPS: ", bestTrait: "Best Trait: ", familiarLabel: "Familiar: ", memoriaLabel: "Memory: ", noTeams: "No teams here yet", closeMsg: "Click outside to close", searchPlaceholder: "Search teams..." }
+    pt: { btn: "🇧🇷 PT", dpsLabel: "DPS Total: ", bestTrait: "Melhor Trait: ", familiarLabel: "Familiar: ", memoriaLabel: "Memória: ", noTeams: "Nenhum time aqui ainda", closeMsg: "Clique fora para fechar", searchPlaceholder: "Pesquisar times...", tagsLabel: "Tags do Time" },
+    en: { btn: "🇺🇸 EN", dpsLabel: "Total DPS: ", bestTrait: "Best Trait: ", familiarLabel: "Familiar: ", memoriaLabel: "Memory: ", noTeams: "No teams here yet", closeMsg: "Click outside to close", searchPlaceholder: "Search teams...", tagsLabel: "Team Tags" }
 };
 
 // Objeto do Banco de dados das Memórias para verificação de raridade
@@ -603,7 +661,8 @@ function loadDatabase() {
             return {
                 title: { pt: teamName, en: teamName },
                 units: [t.slot1, t.slot2, t.slot3, t.slot4, t.slot5, t.slot6],
-                dps: t.dps || "Stats N/A"
+                dps: t.dps || "Stats N/A",
+                tags: t.tags || [] // Guardando as tags estruturadas do teams.js
             };
         });
 
@@ -670,9 +729,15 @@ function renderTeams() {
         return;
     }
 
-    filteredTeams.forEach(team => {
+    filteredTeams.forEach((team, index) => {
         const block = document.createElement('div');
         block.className = 'team-block';
+
+        // Elemento do DPS Rank no canto superior direito (index + 1)
+        const rankDiv = document.createElement('div');
+        rankDiv.className = 'team-rank';
+        rankDiv.textContent = `DPS Rank: #${index + 1}`;
+        block.appendChild(rankDiv);
 
         const title = document.createElement('div');
         title.className = 'team-title';
@@ -710,18 +775,67 @@ function renderTeams() {
             grid.appendChild(slotDiv);
         });
 
+        // Container inferior para alinhar perfeitamente o botão #tags à esquerda e o dps à direita
+        const footerDiv = document.createElement('div');
+        footerDiv.className = 'team-footer';
+
+        const tagsBtn = document.createElement('div');
+        tagsBtn.className = 'team-tags-btn';
+        tagsBtn.textContent = '#tags';
+        tagsBtn.onclick = () => openTagsModal(team);
+
         const dps = document.createElement('div');
         dps.className = 'team-dps';
         dps.textContent = `${ui.dpsLabel} ~ ${team.dps}`;
 
+        footerDiv.appendChild(tagsBtn);
+        footerDiv.appendChild(dps);
+
         block.appendChild(title);
         fullSlotsContainer.appendChild(grid); // Insere o Grid no container preto de ponta a ponta
         block.appendChild(fullSlotsContainer);
-        block.appendChild(dps);
+        block.appendChild(footerDiv);
         container.appendChild(block);
     });
 
     document.getElementById('langBtn').textContent = ui.btn;
+}
+
+// Nova função para renderizar as tags do time em um modal similar ao de Slots
+function openTagsModal(team) {
+    const modal = document.getElementById('modalContent');
+    const overlay = document.getElementById('modalOverlay');
+    const ui = uiText[lang];
+
+    overlay.style.display = "block"; 
+    modal.style.display = "flex";
+
+    let tagsHtml = '';
+    if (team.tags && team.tags.length > 0) {
+        team.tags.forEach(tag => {
+            tagsHtml += `<div class="tag-badge">${tag}</div>`;
+        });
+    } else {
+        tagsHtml += `<div style="opacity: 0.5; font-style: italic;">N/A</div>`;
+    }
+
+    modal.innerHTML = `
+        <div style="width: 100%; text-align: center; margin-bottom: 10px;">
+            <h2 style="margin: 0; color: #ffffff;">${capitalizeWords(team.title[lang])}</h2>
+            <div style="font-weight: bold; opacity: 0.8; font-size: 14px; margin-top: 10px;">${ui.tagsLabel}</div>
+        </div>
+        <hr style="width: 100%; border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
+        <div class="modal-tags-container">
+            ${tagsHtml}
+        </div>
+        <hr style="width: 100%; border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+        <p style="margin: 0; font-size: 14px; opacity: 0.7;">${ui.closeMsg}</p>
+    `;
+
+    setTimeout(() => {
+        overlay.classList.add('active');
+        modal.classList.add('open');
+    }, 10);
 }
 
 function openModal(unit) {
