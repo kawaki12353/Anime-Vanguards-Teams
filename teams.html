@@ -32,8 +32,6 @@
                 --text: #ffffff;
                 --border: #2a2f3a;
                 --hover: #232836;
-                --lang-btn: #111;
-                --lang-btn-bg: #ffffff;
                 --primary: #64b5f6;
                 --trait-color: #34495e;
             }
@@ -79,10 +77,10 @@
 
         .filter-btn {
             width: 100%;
-            padding: 10.8px 18px;
-            font-size: 13.5px;
+            padding: 10.8px 18px; /* Diminuído em 10% (era 12px 20px) */
+            font-size: 13.5px; /* Diminuído em 10% (era 15px) */
             font-weight: bold;
-            border-radius: 6px;
+            border-radius: 6px; /* Botões mais quadrados com pontas um pouquinho arredondadas */
             border: 1px solid var(--border);
             background: var(--card);
             color: var(--text);
@@ -145,8 +143,9 @@
         }
 
         .filter-option.selected {
-            border: 2px solid var(--primary);
-            color: var(--text);
+            background: transparent; /* Removido o fundo Azul do selecionado */
+            color: inherit; /* Mantém a cor do texto padrão */
+            border: 1px solid var(--primary); /* Apenas a borda fica Azul */
         }
 
         /* --- Estilo das Composições --- */
@@ -788,9 +787,9 @@ function toggleDropdown(dropdownId) {
     }
 }
 
-// Fecha os dropdowns ao clicar fora deles
+// Modificado: Só esconde o painel se o clique for totalmente fora do wrapper do filtro
 window.addEventListener('click', function(e) {
-    if (!e.target.matches('.filter-btn') && !e.target.matches('.filter-search-input') && !e.target.matches('.filter-dropdown') && !e.target.matches('.filter-option')) {
+    if (!e.target.closest('.filter-wrapper')) {
         document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('show'));
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     }
@@ -850,7 +849,7 @@ function filterUnitOptions() {
 function selectTag(tag) {
     selectedTag = tag;
     const btn = document.getElementById('tagFilterBtn');
-    btn.textContent = tag ? tag : (uiText[lang].allTags);
+    btn.textContent = tag ? tag : (uiText[lang].allTags); // Exibe apenas o nome da Tag ou volta para "Tags"
     
     document.querySelectorAll('#tagDropdown .filter-option').forEach(opt => opt.classList.remove('selected'));
     if(tag) {
@@ -859,13 +858,14 @@ function selectTag(tag) {
         document.getElementById('tag-opt-all').classList.add('selected');
     }
     
+    // Removido o fechamento automático e remoção de classe active ao selecionar
     renderTeams();
 }
 
 function selectUnit(unitName) {
     selectedUnit = unitName;
     const btn = document.getElementById('unitFilterBtn');
-    btn.textContent = unitName ? unitName : (uiText[lang].allUnits);
+    btn.textContent = unitName ? unitName : (uiText[lang].allUnits); // Exibe apenas o nome da Unit ou volta para "Units"
     
     document.querySelectorAll('#unitOptionsContainer .filter-option').forEach(opt => opt.classList.remove('selected'));
     if(unitName) {
@@ -874,6 +874,7 @@ function selectUnit(unitName) {
         document.getElementById('unit-opt-all').classList.add('selected');
     }
     
+    // Removido o fechamento automático e remoção de classe active ao selecionar
     renderTeams();
 }
 
@@ -911,7 +912,7 @@ function renderTeams() {
     container.innerHTML = "";
     const ui = uiText[lang];
 
-    // Atualiza os placeholders e labels dos botões de acordo com o idioma ativo
+    // Atualiza os placeholders e labels dos botões mantendo o novo comportamento de texto limpo
     document.getElementById('tagFilterBtn').textContent = selectedTag ? selectedTag : ui.allTags;
     document.getElementById('unitFilterBtn').textContent = selectedUnit ? selectedUnit : ui.allUnits;
     const uSearch = document.getElementById('unitSearch');
@@ -1056,7 +1057,7 @@ function openModal(unit) {
     const overlay = document.getElementById('modalOverlay');
     const ui = uiText[lang];
 
-    // Correção do Bug Mobile: Garante que o display seja resetado antes di aplicar animação
+    // Correção do Bug Mobile: Garante que o display seja resetado antes de aplicar animação
     overlay.style.display = "block"; 
     modal.style.display = "flex";
 
