@@ -604,6 +604,67 @@
             object-fit: contain;
         }
 
+        /* --- Custom Caloric Footer Button Styles --- */
+        .caloric-footer-btn-wrapper {
+            position: relative;
+            width: 34px;
+            height: 34px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .caloric-footer-btn-wrapper:active {
+            transform: scale(1.08);
+        }
+
+        .caloric-frame-skill {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 24px;
+            height: 24px;
+            border-radius: 0px; /* Quadrada conforme solicitado */
+            border: 1px solid #ffffff;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            backdrop-filter: blur(2px);
+            z-index: 2;
+        }
+
+        .caloric-frame-skill img {
+            width: 80% !important;
+            height: 80% !important;
+            object-fit: contain;
+            border-radius: 0px !important;
+        }
+
+        .caloric-frame-unit {
+            position: absolute;
+            bottom: 10px;
+            right: -10px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%; /* Círculo conforme solicitado */
+            border: 1px solid #ffffff;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            backdrop-filter: blur(2px);
+            z-index: 1;
+        }
+
+        .caloric-frame-unit img {
+            width: 80% !important;
+            height: 80% !important;
+            object-fit: contain;
+            border-radius: 50% !important; /* Imagem interna em círculo */
+        }
+
         /* Estilizações de Borda em Degradê Customizadas via CSS */
         .frame-familiar-gradient {
             border: 3px solid transparent !important;
@@ -638,59 +699,6 @@
         .frame-epic-gradient {
             border: 3px solid transparent !important;
             background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)) padding-box, linear-gradient(135deg, #800080, #000000) border-box !important;
-        }
-
-        /* --- Custom Caloric Footer Button Styles --- */
-        .caloric-footer-btn-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .caloric-footer-btn-wrapper:active {
-            transform: scale(1.08);
-        }
-
-        .caloric-frame-skill {
-            width: 24px;
-            height: 24px;
-            border-radius: 0px; /* Quadrada conforme solicitado */
-            border: 1px solid #ffffff;
-            background: rgba(0, 0, 0, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            backdrop-filter: blur(2px);
-        }
-
-        .caloric-frame-skill img {
-            width: 80% !important;
-            height: 80% !important;
-            object-fit: contain;
-            border-radius: 0px !important;
-        }
-
-        .caloric-frame-unit {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%; /* Modificado para Círculo conforme solicitado */
-            border: 1px solid #ffffff;
-            background: rgba(0, 0, 0, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            backdrop-filter: blur(2px);
-        }
-
-        .caloric-frame-unit img {
-            width: 80% !important;
-            height: 80% !important;
-            object-fit: contain;
-            border-radius: 50% !important; /* Imagem interna em círculo */
         }
     </style>
 </head>
