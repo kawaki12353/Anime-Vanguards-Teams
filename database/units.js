@@ -1,4 +1,32 @@
 const units = {
+    "Armored Mage (Requip)": {
+        elements: "Holy",
+        trait: "[1]Deadeye[1]",
+        image: "Armored_Mage_(Requip).png",
+        familiar: "Birb",
+        memoria: "Dot Amplifier"
+    },
+    "Demon Hybrid (Chainsaw)": {
+        elements: "Unbound",
+        trait: "[1]Monarch[1]",
+        image: "Demon_Hybrid_(Chainsaw).png",
+        familiar: "The Doctor",
+        memoria: "Perpetual Motion"
+    },
+    "Savior (Moonless)": {
+        elements: "Holy",
+        trait: "[1]Deadeye[1]",
+        image: "Savior_(Moonless).png",
+        familiar: "Birb",
+        memoria: "The True Savior"
+    },
+    "Delusional Demon (Blood)": {
+        elements: "Unbound",
+        trait: "[1]Monarch[1]",
+        image: "Delusional_Demon_(Blood).png",
+        familiar: "The Doctor",
+        memoria: "POWAHH!!!"
+    },
     "Strongest Shinobi (Martial)": {
         elements: "Nature",
         trait: "[1]Monarch[1]",
