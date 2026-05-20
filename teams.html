@@ -79,10 +79,10 @@
 
         .filter-btn {
             width: 100%;
-            padding: 12px 20px;
-            font-size: 15px;
+            padding: 10.8px 18px;
+            font-size: 13.5px;
             font-weight: bold;
-            border-radius: 25px;
+            border-radius: 6px;
             border: 1px solid var(--border);
             background: var(--card);
             color: var(--text);
@@ -145,8 +145,8 @@
         }
 
         .filter-option.selected {
-            background: var(--primary);
-            color: #ffffff;
+            border: 2px solid var(--primary);
+            color: var(--text);
         }
 
         /* --- Estilo das Composições --- */
@@ -648,7 +648,7 @@
 <div class="filters-container">
     <!-- Filtro de Tags (Esquerda) -->
     <div class="filter-wrapper">
-        <button id="tagFilterBtn" class="filter-btn" onclick="toggleDropdown('tagDropdown')">Tags: Todas</button>
+        <button id="tagFilterBtn" class="filter-btn" onclick="toggleDropdown('tagDropdown')">Tags</button>
         <div id="tagDropdown" class="filter-dropdown">
             <!-- Populado dinamicamente via JS -->
         </div>
@@ -656,7 +656,7 @@
 
     <!-- Filtro de Units (Direita) -->
     <div class="filter-wrapper">
-        <button id="unitFilterBtn" class="filter-btn" onclick="toggleDropdown('unitDropdown')">Units: Todas</button>
+        <button id="unitFilterBtn" class="filter-btn" onclick="toggleDropdown('unitDropdown')">Units</button>
         <div id="unitDropdown" class="filter-dropdown">
             <input type="text" id="unitSearch" class="filter-search-input" oninput="filterUnitOptions()" placeholder="Buscar unit...">
             <div id="unitOptionsContainer">
@@ -687,8 +687,8 @@ let selectedUnit = "";
 
 // Adicionado os textos estáticos dos títulos "Familiar:" e "Memória:" seguindo a mesma tradução
 const uiText = {
-    pt: { btn: "🇧🇷 PT", dpsLabel: "DPS Total: ", bestTrait: "Melhor Trait: ", familiarLabel: "Familiar: ", memoriaLabel: "Memória: ", noTeams: "Nenhum time aqui ainda", closeMsg: "Clique fora para fechar", searchPlaceholder: "Pesquisar times...", tagsLabel: "Tags do Time", allTags: "Tags: Todas", allUnits: "Units: Todas" },
-    en: { btn: "🇺🇸 EN", dpsLabel: "Total DPS: ", bestTrait: "Best Trait: ", familiarLabel: "Familiar: ", memoriaLabel: "Memory: ", noTeams: "No teams here yet", closeMsg: "Click outside to close", searchPlaceholder: "Search teams...", tagsLabel: "Team Tags", allTags: "Tags: All", allUnits: "Units: All" }
+    pt: { btn: "🇧🇷 PT", dpsLabel: "DPS Total: ", bestTrait: "Melhor Trait: ", familiarLabel: "Familiar: ", memoriaLabel: "Memória: ", noTeams: "Nenhum time aqui ainda", closeMsg: "Clique fora para fechar", searchPlaceholder: "Pesquisar times...", tagsLabel: "Tags do Time", allTags: "Tags", allUnits: "Units" },
+    en: { btn: "🇺🇸 EN", dpsLabel: "Total DPS: ", bestTrait: "Best Trait: ", familiarLabel: "Familiar: ", memoriaLabel: "Memory: ", noTeams: "No teams here yet", closeMsg: "Click outside to close", searchPlaceholder: "Search teams...", tagsLabel: "Team Tags", allTags: "Tags", allUnits: "Units" }
 };
 
 // Objeto do Banco de dados das Memórias para verificação de raridade
@@ -850,7 +850,7 @@ function filterUnitOptions() {
 function selectTag(tag) {
     selectedTag = tag;
     const btn = document.getElementById('tagFilterBtn');
-    btn.textContent = tag ? `Tag: ${tag}` : (uiText[lang].allTags);
+    btn.textContent = tag ? tag : (uiText[lang].allTags);
     
     document.querySelectorAll('#tagDropdown .filter-option').forEach(opt => opt.classList.remove('selected'));
     if(tag) {
@@ -859,15 +859,13 @@ function selectTag(tag) {
         document.getElementById('tag-opt-all').classList.add('selected');
     }
     
-    document.getElementById('tagDropdown').classList.remove('show');
-    btn.classList.remove('active');
     renderTeams();
 }
 
 function selectUnit(unitName) {
     selectedUnit = unitName;
     const btn = document.getElementById('unitFilterBtn');
-    btn.textContent = unitName ? `Unit: ${unitName}` : (uiText[lang].allUnits);
+    btn.textContent = unitName ? unitName : (uiText[lang].allUnits);
     
     document.querySelectorAll('#unitOptionsContainer .filter-option').forEach(opt => opt.classList.remove('selected'));
     if(unitName) {
@@ -876,8 +874,6 @@ function selectUnit(unitName) {
         document.getElementById('unit-opt-all').classList.add('selected');
     }
     
-    document.getElementById('unitDropdown').classList.remove('show');
-    btn.classList.remove('active');
     renderTeams();
 }
 
@@ -916,8 +912,8 @@ function renderTeams() {
     const ui = uiText[lang];
 
     // Atualiza os placeholders e labels dos botões de acordo com o idioma ativo
-    document.getElementById('tagFilterBtn').textContent = selectedTag ? `Tag: ${selectedTag}` : ui.allTags;
-    document.getElementById('unitFilterBtn').textContent = selectedUnit ? `Unit: ${selectedUnit}` : ui.allUnits;
+    document.getElementById('tagFilterBtn').textContent = selectedTag ? selectedTag : ui.allTags;
+    document.getElementById('unitFilterBtn').textContent = selectedUnit ? selectedUnit : ui.allUnits;
     const uSearch = document.getElementById('unitSearch');
     if(uSearch) uSearch.placeholder = lang === 'pt' ? "Buscar unit..." : "Search unit...";
 
@@ -1060,7 +1056,7 @@ function openModal(unit) {
     const overlay = document.getElementById('modalOverlay');
     const ui = uiText[lang];
 
-    // Correção do Bug Mobile: Garante que o display seja resetado antes de aplicar animação
+    // Correção do Bug Mobile: Garante que o display seja resetado antes di aplicar animação
     overlay.style.display = "block"; 
     modal.style.display = "flex";
 
