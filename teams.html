@@ -62,27 +62,91 @@
         }
         .logo { width: 220px; max-width: 60vw; }
 
-        /* --- Barra de Pesquisa --- */
-        .search-container {
+        /* --- Custom UI Filtros Adaptados --- */
+        .filters-container {
             display: flex;
             justify-content: center;
+            gap: 15px;
             margin: 0 auto 30px;
-            width: 50%; /* 50% menor no PC */
+            width: 50%;
+            position: relative;
         }
-        .search-container input {
+
+        .filter-wrapper {
+            position: relative;
+            flex: 1;
+        }
+
+        .filter-btn {
             width: 100%;
             padding: 12px 20px;
-            font-size: 16px;
+            font-size: 15px;
+            font-weight: bold;
             border-radius: 25px;
             border: 1px solid var(--border);
             background: var(--card);
             color: var(--text);
             outline: none;
+            cursor: pointer;
             transition: border-color 0.3s, box-shadow 0.3s;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .search-container input:focus {
+
+        .filter-btn:focus, .filter-btn.active {
             border-color: var(--primary);
             box-shadow: 0 0 8px rgba(13, 71, 161, 0.2);
+        }
+
+        .filter-dropdown {
+            display: none;
+            position: absolute;
+            top: 110%;
+            left: 0;
+            width: 100%;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .filter-dropdown.show {
+            display: block;
+        }
+
+        .filter-search-input {
+            width: 100%;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            font-size: 14px;
+        }
+
+        .filter-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+            font-size: 14px;
+        }
+
+        .filter-option:hover {
+            background: var(--hover);
+        }
+
+        .filter-option.selected {
+            background: var(--primary);
+            color: #ffffff;
         }
 
         /* --- Estilo das Composições --- */
@@ -362,8 +426,8 @@
                 width: 165px; /* Reduzido em 25% (Original 220px) */
             }
 
-            .search-container {
-                width: 75%; /* 25% menor no Mobile */
+            .filters-container {
+                width: 90%; /* Ajuste de largura para mobile */
             }
 
             .teams-container {
@@ -581,8 +645,25 @@
     <img src="assets/Av_logo.png" alt="Anime Vanguards Logo" class="logo">
 </header>
 
-<div class="search-container">
-    <input type="text" id="searchBar" oninput="renderTeams()">
+<div class="filters-container">
+    <!-- Filtro de Tags (Esquerda) -->
+    <div class="filter-wrapper">
+        <button id="tagFilterBtn" class="filter-btn" onclick="toggleDropdown('tagDropdown')">Tags: Todas</button>
+        <div id="tagDropdown" class="filter-dropdown">
+            <!-- Populado dinamicamente via JS -->
+        </div>
+    </div>
+
+    <!-- Filtro de Units (Direita) -->
+    <div class="filter-wrapper">
+        <button id="unitFilterBtn" class="filter-btn" onclick="toggleDropdown('unitDropdown')">Units: Todas</button>
+        <div id="unitDropdown" class="filter-dropdown">
+            <input type="text" id="unitSearch" class="filter-search-input" oninput="filterUnitOptions()" placeholder="Buscar unit...">
+            <div id="unitOptionsContainer">
+                <!-- Populado dinamicamente via JS -->
+            </div>
+        </div>
+    </div>
 </div>
 
 <main>
@@ -600,10 +681,14 @@
 <script>
 let lang = localStorage.getItem("siteLang") || "pt";
 
+// Estado dos filtros selecionados
+let selectedTag = "";
+let selectedUnit = "";
+
 // Adicionado os textos estáticos dos títulos "Familiar:" e "Memória:" seguindo a mesma tradução
 const uiText = {
-    pt: { btn: "🇧🇷 PT", dpsLabel: "DPS Total: ", bestTrait: "Melhor Trait: ", familiarLabel: "Familiar: ", memoriaLabel: "Memória: ", noTeams: "Nenhum time aqui ainda", closeMsg: "Clique fora para fechar", searchPlaceholder: "Pesquisar times...", tagsLabel: "Tags do Time" },
-    en: { btn: "🇺🇸 EN", dpsLabel: "Total DPS: ", bestTrait: "Best Trait: ", familiarLabel: "Familiar: ", memoriaLabel: "Memory: ", noTeams: "No teams here yet", closeMsg: "Click outside to close", searchPlaceholder: "Search teams...", tagsLabel: "Team Tags" }
+    pt: { btn: "🇧🇷 PT", dpsLabel: "DPS Total: ", bestTrait: "Melhor Trait: ", familiarLabel: "Familiar: ", memoriaLabel: "Memória: ", noTeams: "Nenhum time aqui ainda", closeMsg: "Clique fora para fechar", searchPlaceholder: "Pesquisar times...", tagsLabel: "Tags do Time", allTags: "Tags: Todas", allUnits: "Units: Todas" },
+    en: { btn: "🇺🇸 EN", dpsLabel: "Total DPS: ", bestTrait: "Best Trait: ", familiarLabel: "Familiar: ", memoriaLabel: "Memory: ", noTeams: "No teams here yet", closeMsg: "Click outside to close", searchPlaceholder: "Search teams...", tagsLabel: "Team Tags", allTags: "Tags: All", allUnits: "Units: All" }
 };
 
 // Objeto do Banco de dados das Memórias para verificação de raridade
@@ -678,10 +763,122 @@ function loadDatabase() {
             return dpsB - dpsA;
         });
 
+        setupFilters();
         renderTeams();
     } catch (error) {
         console.error("Erro ao processar banco de dados:", error);
     }
+}
+
+/* --- Controle e Inicialização de Filtros Customizados --- */
+function toggleDropdown(dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
+    const isOpen = dropdown.classList.contains('show');
+    
+    // Fecha todos os dropdowns abertos antes
+    document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('show'));
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+
+    if (!isOpen) {
+        dropdown.classList.add('show');
+        dropdown.previousElementSibling.classList.add('active');
+        if (dropdownId === 'unitDropdown') {
+            document.getElementById('unitSearch').focus();
+        }
+    }
+}
+
+// Fecha os dropdowns ao clicar fora deles
+window.addEventListener('click', function(e) {
+    if (!e.target.matches('.filter-btn') && !e.target.matches('.filter-search-input') && !e.target.matches('.filter-dropdown') && !e.target.matches('.filter-option')) {
+        document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('show'));
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    }
+});
+
+function setupFilters() {
+    // 1. Configurando Filtro de Tags (Apenas 1 de cada tag existente nos times)
+    const tagDropdown = document.getElementById('tagDropdown');
+    const uniqueTags = new Set();
+    globalTeams.forEach(team => {
+        if (team.tags) {
+            team.tags.forEach(tag => uniqueTags.add(tag));
+        }
+    });
+
+    let tagHtml = `<div class="filter-option selected" id="tag-opt-all" onclick="selectTag('')">${lang === 'pt' ? 'Todas' : 'All'}</div>`;
+    uniqueTags.forEach(tag => {
+        tagHtml += `<div class="filter-option" id="tag-opt-${tag}" onclick="selectTag('${tag}')">${tag}</div>`;
+    });
+    tagDropdown.innerHTML = tagHtml;
+
+    // 2. Configurando Filtro de Units (Apenas as registradas e vinculadas a pelo menos um time)
+    const unitOptionsContainer = document.getElementById('unitOptionsContainer');
+    const unitsInTeams = new Set();
+    
+    globalTeams.forEach(team => {
+        team.units.forEach(slot => {
+            const names = Array.isArray(slot) ? slot : [slot];
+            names.forEach(name => {
+                if (globalUnits[name]) {
+                    unitsInTeams.add(name);
+                }
+            });
+        });
+    });
+
+    let unitHtml = `<div class="filter-option selected" id="unit-opt-all" onclick="selectUnit('')">${lang === 'pt' ? 'Todas' : 'All'}</div>`;
+    Array.from(unitsInTeams).sort().forEach(unitName => {
+        unitHtml += `<div class="filter-option" data-name="${unitName.toLowerCase()}" id="unit-opt-${CSS.escape(unitName)}" onclick="selectUnit('${unitName.replace(/'/g, "\\'")}')">${unitName}</div>`;
+    });
+    unitOptionsContainer.innerHTML = unitHtml;
+}
+
+function filterUnitOptions() {
+    const query = document.getElementById('unitSearch').value.toLowerCase();
+    const options = document.querySelectorAll('#unitOptionsContainer .filter-option');
+    options.forEach(opt => {
+        const name = opt.getAttribute('data-name');
+        if (!name || name.includes(query)) {
+            opt.style.display = "block";
+        } else {
+            opt.style.display = "none";
+        }
+    });
+}
+
+function selectTag(tag) {
+    selectedTag = tag;
+    const btn = document.getElementById('tagFilterBtn');
+    btn.textContent = tag ? `Tag: ${tag}` : (uiText[lang].allTags);
+    
+    document.querySelectorAll('#tagDropdown .filter-option').forEach(opt => opt.classList.remove('selected'));
+    if(tag) {
+        document.getElementById(`tag-opt-${tag}`).classList.add('selected');
+    } else {
+        document.getElementById('tag-opt-all').classList.add('selected');
+    }
+    
+    document.getElementById('tagDropdown').classList.remove('show');
+    btn.classList.remove('active');
+    renderTeams();
+}
+
+function selectUnit(unitName) {
+    selectedUnit = unitName;
+    const btn = document.getElementById('unitFilterBtn');
+    btn.textContent = unitName ? `Unit: ${unitName}` : (uiText[lang].allUnits);
+    
+    document.querySelectorAll('#unitOptionsContainer .filter-option').forEach(opt => opt.classList.remove('selected'));
+    if(unitName) {
+        document.getElementById(`unit-opt-${CSS.escape(unitName)}`).classList.add('selected');
+    } else {
+        document.getElementById('unit-opt-all').classList.add('selected');
+    }
+    
+    document.getElementById('unitDropdown').classList.remove('show');
+    btn.classList.remove('active');
+    renderTeams();
 }
 
 // Função auxiliar interna para gerar as tags HTML de Elementos mapeados estruturadamente
@@ -718,19 +915,34 @@ function renderTeams() {
     container.innerHTML = "";
     const ui = uiText[lang];
 
-    // Atualiza o placeholder da barra de pesquisa de acordo com o idioma ativo
-    const searchBar = document.getElementById('searchBar');
-    if (searchBar) searchBar.placeholder = ui.searchPlaceholder;
+    // Atualiza os placeholders e labels dos botões de acordo com o idioma ativo
+    document.getElementById('tagFilterBtn').textContent = selectedTag ? `Tag: ${selectedTag}` : ui.allTags;
+    document.getElementById('unitFilterBtn').textContent = selectedUnit ? `Unit: ${selectedUnit}` : ui.allUnits;
+    const uSearch = document.getElementById('unitSearch');
+    if(uSearch) uSearch.placeholder = lang === 'pt' ? "Buscar unit..." : "Search unit...";
 
-    const searchQuery = searchBar ? searchBar.value.toLowerCase() : "";
-
-    // Filtra os times baseando-se no termo digitado
+    // Filtra os times baseando-se nos dois critérios de UI personalizados selecionados
     const filteredTeams = globalTeams.filter(team => {
-        return team.title[lang].toLowerCase().includes(searchQuery);
+        // Verifica Filtro 1: Tag
+        const matchTag = !selectedTag || (team.tags && team.tags.includes(selectedTag));
+        
+        // Verifica Filtro 2: Presença da Unit no Time
+        let matchUnit = !selectedUnit;
+        if (selectedUnit) {
+            matchUnit = team.units.some(slot => {
+                if (Array.isArray(slot)) {
+                    return slot.includes(selectedUnit);
+                }
+                return slot === selectedUnit;
+            });
+        }
+
+        return matchTag && matchUnit;
     });
 
     if (filteredTeams.length === 0) {
         document.getElementById('langBtn').textContent = ui.btn;
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 5px; opacity: 0.6; font-weight: bold;">${ui.noTeams}</div>`;
         return;
     }
 
@@ -938,6 +1150,7 @@ function closeModal() {
 function toggleLang() {
     lang = lang === "pt" ? "en" : "pt";
     localStorage.setItem("siteLang", lang);
+    setupFilters();
     renderTeams();
 }
 
