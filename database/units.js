@@ -4,7 +4,7 @@ const units = {
         trait: "[1]Deadeye[1]",
         image: "Armored_Mage_(Requip).png",
         familiar: "Birb",
-        memoria: "Dot Amplifier"
+        memoria: "DoT Amplifier"
     },
     "Demon Hybrid (Chainsaw)": {
         elements: "Unbound",
