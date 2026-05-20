@@ -349,10 +349,10 @@
             top: 10px;
             right: 22px; /* Vai um pouquinho mais para a direita (de 25px para 22px) */
             font-weight: bold;
-            font-size: 10px; /* Reduzido o tamanho da fonte */
+            font-size: 10px; /* Reduzido o tamanho do Rank DPS */
             background: rgba(144, 238, 144, 0.2); /* Fundo Verde mais claro transparente (LightGreen) */
             border: 1px solid #90ee90; /* Borda Verde mais claro (LightGreen) */
-            padding: 2px 10px; /* Ajustado proporcionalmente ao tamanho menor */
+            padding: 2px 10px; /* Diminuído o padding interno do Rank */
             color: #90ee90; /* Cor da letra Verde mais claro (LightGreen) */
             border-radius: 0px; /* Pontas pontiagudas (não redondas) */
         }
@@ -644,7 +644,7 @@
             position: absolute;
             width: 28px;
             height: 28px;
-            border-radius: 0px;
+            border-radius: 0px; /* Mantido quadrada conforme solicitado */
             border: 1px solid #ffffff;
             background: rgba(0, 0, 0, 0.4);
             display: flex;
@@ -653,7 +653,7 @@
             overflow: hidden;
             backdrop-filter: blur(2px);
             bottom: 0;
-            right: -10px; /* Movido para o lado direito do botão de Tags */
+            right: -10px; /* Movido para o lado direito do botão de Tags (Unit) */
             z-index: 12;
             cursor: pointer;
         }
@@ -669,7 +669,7 @@
             position: absolute;
             width: 28px;
             height: 28px;
-            border-radius: 50%; /* Modificado para Círculo */
+            border-radius: 50%; /* Modificado para Círculo conforme solicitado */
             border: 1px solid #ffffff;
             background: rgba(0, 0, 0, 0.4);
             display: flex;
@@ -678,7 +678,7 @@
             overflow: hidden;
             backdrop-filter: blur(2px);
             bottom: 0;
-            right: 10px; /* Posicionado à esquerda do botão de Skill */
+            right: 14px; /* Posicionado à esquerda da Skill, ficando na ordem correta */
             z-index: 11;
             cursor: pointer;
         }
@@ -687,7 +687,7 @@
             width: 80% !important;
             height: 80% !important;
             object-fit: contain;
-            border-radius: 50% !important; /* Modificado para imagem acompanhar o Círculo */
+            border-radius: 50% !important;
         }
     </style>
 </head>
@@ -1004,7 +1004,7 @@ function renderTeams() {
 
         const title = document.createElement('div');
         title.className = 'team-title';
-        title.textContent = team.title[lang]; // Alterado para exibir exatamente igual ao database/teams.js sem capitalize/lowercase
+        title.textContent = team.title[lang]; // Mantido exatamente como está no database/teams.js sem alteração de caixa
 
         // Novo Container Preto que estende horizontalmente de ponta a ponta
         const fullSlotsContainer = document.createElement('div');
