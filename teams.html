@@ -32,6 +32,8 @@
                 --text: #ffffff;
                 --border: #2a2f3a;
                 --hover: #232836;
+                --lang-btn: #111;
+                --lang-btn-bg: #ffffff;
                 --primary: #64b5f6;
                 --trait-color: #34495e;
             }
@@ -182,7 +184,6 @@
             margin-bottom: 5px; /* Reduzido para fazer o container de slots ir mais para cima */
             margin-left: 25px; /* Compensa o recuo do padding removido no bloco pai */
             color: #ffffff; /* Nome do time Branco */
-            text-transform: lowercase; /* Letra minúscula normal */
             letter-spacing: 1px;
         }
 
@@ -190,14 +191,6 @@
             .team-title {
                 color: #111111; /* Nome do time escuro no modo claro para legibilidade */
             }
-        }
-
-        /* Aplica a primeira letra de cada palavra em Maiúscula */
-        .team-title::first-letter {
-            text-transform: uppercase;
-        }
-        .team-title {
-            text-transform: lowercase;
         }
 
         /* Container Preto Interno de ponta a ponta */
@@ -226,22 +219,8 @@
             scrollbar-width: none;
             transform: scale(0.92); /* Modificado: Aumentado um Pouquinho o tamanho (de 0.85 para 0.92) */
             position: relative;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         .unit-slot::-webkit-scrollbar { display: none; }
-
-        /* Interação Azul de pulso ao clicar nos botões do Caloric */
-        .unit-slot.caloric-active-pulse {
-            border-color: #00bfff !important;
-            box-shadow: 0 0 15px #00bfff, inset 0 0 10px #00bfff;
-            animation: caloricPulseAnim 0.6s ease-in-out;
-        }
-
-        @keyframes caloricPulseAnim {
-            0% { transform: scale(0.92); }
-            50% { transform: scale(0.96); }
-            100% { transform: scale(0.92); }
-        }
 
         .unit-card {
             height: 100%;
@@ -344,11 +323,17 @@
             align-items: center;
         }
 
-        /* Botão #tags no canto esquerdo inferior */
-        .team-tags-btn {
-            align-self: flex-start;
+        /* Container para agrupar botões do lado esquerdo inferior */
+        .team-buttons-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             margin-top: 8px;
             margin-left: 25px;
+        }
+
+        /* Botão #tags no canto esquerdo inferior */
+        .team-tags-btn {
             font-weight: bold;
             font-size: 13px; /* Mesmo tamanho que a letra falando do DPS do time */
             background: rgba(255, 215, 0, 0.2); /* Fundo Amarelo Transparente */
@@ -364,13 +349,39 @@
             transform: scale(1.08); /* Pequenino zoom ao clicar */
         }
 
+        /* Botão do Caloric ao lado esquerdo */
+        .team-caloric-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            background: rgba(255, 69, 0, 0.2);
+            border: 1px solid #ff4500;
+            padding: 3px 14px;
+            border-radius: 20px;
+            color: #ff4500;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .team-caloric-btn:active {
+            transform: scale(1.08);
+        }
+
+        .team-caloric-btn img {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+        }
+
         /* DPS Rank no canto superior direito */
         .team-rank {
             position: absolute;
             top: 10px;
             right: 22px; /* Vai um pouquinho mais para a direita (de 25px para 22px) */
             font-weight: bold;
-            font-size: 12.5px; /* Diminuído bem pouquinho o tamanho da fonte (de 13px para 12.5px) */
+            font-size: 10px; /* Reduzido o tamanho como solicitado */
             background: rgba(144, 238, 144, 0.2); /* Fundo Verde mais claro transparente (LightGreen) */
             border: 1px solid #90ee90; /* Borda Verde mais claro (LightGreen) */
             padding: 2px 14px; /* Diminuída um pouquinho a distância do fundo até a letra verticalmente (de 3px para 2px) */
@@ -690,7 +701,7 @@
             position: absolute;
             width: 28px;
             height: 28px;
-            border-radius: 50%; /* Modificado: Círculo ao invés de Quadrado */
+            border-radius: 50%; /* Modificado para Círculo */
             border: 1px solid #ffffff;
             background: rgba(0, 0, 0, 0.4);
             display: flex;
@@ -708,7 +719,7 @@
             width: 80% !important;
             height: 80% !important;
             object-fit: contain;
-            border-radius: 50%; /* Modificado: Círculo ao invés de Quadrado */
+            border-radius: 50% !important; /* Modificado para Círculo */
         }
     </style>
 </head>
@@ -805,21 +816,6 @@ function getMemoriaClass(memoriaName) {
 
 let globalUnits = {};
 let globalTeams = [];
-
-function capitalizeWords(str) {
-    return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
-}
-
-// Função auxiliar interna para acionar o efeito de pulso azul na Unit do Slot
-function triggerCaloricInteraction(slotElement) {
-    if (!slotElement) return;
-    slotElement.classList.remove('caloric-active-pulse');
-    void slotElement.offsetWidth; // Força reflow para reiniciar animação CSS se clicado seguidamente
-    slotElement.classList.add('caloric-active-pulse');
-    setTimeout(() => {
-        slotElement.classList.remove('caloric-active-pulse');
-    }, 600);
-}
 
 function loadDatabase() {
     try {
@@ -1040,7 +1036,7 @@ function renderTeams() {
 
         const title = document.createElement('div');
         title.className = 'team-title';
-        title.textContent = capitalizeWords(team.title[lang]);
+        title.textContent = team.title[lang]; // Exibe exatamente igual ao database/teams.js
 
         // Novo Container Preto que estende horizontalmente de ponta a ponta
         const fullSlotsContainer = document.createElement('div');
@@ -1069,35 +1065,7 @@ function renderTeams() {
                     ${unitsInSlot.length > 1 && index === 0 ? '<div class="swap-indicator">▼ swap</div>' : ''}
                 `;
 
-                // Condicional Caloric aplicada para o Lich King (Ruler)
-                if (name === "Lich King (Ruler)" && team.caloric) {
-                    const caloricUnitData = globalUnits[team.caloric] || { name: team.caloric, trait: "Common", image: "sem_icone.png" };
-                    
-                    const caloricWrapper = document.createElement('div');
-                    caloricWrapper.className = 'caloric-wrapper';
-                    
-                    const frameUnit = document.createElement('div');
-                    frameUnit.className = 'caloric-frame-unit';
-                    frameUnit.onclick = (e) => {
-                        e.stopPropagation();
-                        triggerCaloricInteraction(slotDiv);
-                        openModal(caloricUnitData);
-                    };
-                    frameUnit.innerHTML = `<img src="assets/units/${caloricUnitData.image}" onerror="this.src='assets/sem_icone.png'">`;
-                    
-                    const frameSkill = document.createElement('div');
-                    frameSkill.className = 'caloric-frame-skill';
-                    frameSkill.onclick = (e) => {
-                        e.stopPropagation();
-                        openModal(caloricUnitData);
-                    };
-                    frameSkill.innerHTML = `<img src="assets/skills/Caloric.png" onerror="this.parentNode.style.display='none'">`;
-                    
-                    caloricWrapper.appendChild(frameUnit);
-                    caloricWrapper.appendChild(frameSkill);
-                    unitCard.appendChild(caloricWrapper);
-                }
-
+                // Condicional Caloric antiga removida do slot interno de unidades para reposicionamento
                 slotDiv.appendChild(unitCard);
             });
 
@@ -1108,16 +1076,34 @@ function renderTeams() {
         const footerDiv = document.createElement('div');
         footerDiv.className = 'team-footer';
 
+        // Container agrupador esquerdo para as tags e botão caloric opcional
+        const buttonsLeftDiv = document.createElement('div');
+        buttonsLeftDiv.className = 'team-buttons-left';
+
         const tagsBtn = document.createElement('div');
         tagsBtn.className = 'team-tags-btn';
         tagsBtn.textContent = '#tags';
         tagsBtn.onclick = () => openTagsModal(team);
+        buttonsLeftDiv.appendChild(tagsBtn);
+
+        // Se houver caloric cadastrado no time, adiciona o botão ao lado direito do #tags
+        if (team.caloric) {
+            const caloricUnitData = globalUnits[team.caloric] || { name: team.caloric, trait: "Common", image: "sem_icone.png" };
+            const caloricBtn = document.createElement('div');
+            caloricBtn.className = 'team-caloric-btn';
+            caloricBtn.onclick = () => openModal(caloricUnitData);
+            caloricBtn.innerHTML = `
+                <img src="assets/skills/Caloric.png" onerror="this.style.display='none'">
+                <span>Caloric</span>
+            `;
+            buttonsLeftDiv.appendChild(caloricBtn);
+        }
 
         const dps = document.createElement('div');
         dps.className = 'team-dps';
         dps.textContent = `${ui.dpsLabel} ~ ${team.dps}`;
 
-        footerDiv.appendChild(tagsBtn);
+        footerDiv.appendChild(buttonsLeftDiv);
         footerDiv.appendChild(dps);
 
         block.appendChild(title);
@@ -1150,7 +1136,7 @@ function openTagsModal(team) {
 
     modal.innerHTML = `
         <div style="width: 100%; text-align: center; margin-bottom: 10px;">
-            <h2 style="margin: 0; color: #ffffff;">${capitalizeWords(team.title[lang])}</h2>
+            <h2 style="margin: 0; color: #ffffff;">${team.title[lang]}</h2>
             <div style="font-weight: bold; opacity: 0.8; font-size: 14px; margin-top: 10px;">${ui.tagsLabel}</div>
         </div>
         <hr style="width: 100%; border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
