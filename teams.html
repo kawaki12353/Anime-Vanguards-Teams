@@ -126,7 +126,7 @@
                 color: #111111; /* Nome do time escuro no modo claro para legibilidade */
             }
         }
-        
+
         /* Aplica a primeira letra de cada palavra em Maiúscula */
         .team-title::first-letter {
             text-transform: uppercase;
@@ -488,10 +488,10 @@ function loadDatabase() {
 // Função auxiliar interna para gerar as tags HTML de Elementos mapeados estruturadamente
 function getElementsHtml(unitData) {
     if (!unitData.elements) return '';
-    
+
     let elementsArr = Array.isArray(unitData.elements) ? unitData.elements : [unitData.elements];
     let elementsHtml = '<div class="elements-wrapper">';
-    
+
     if (elementsArr.length === 1) {
         elementsHtml += `
             <div class="element-frame frame-single">
@@ -509,7 +509,7 @@ function getElementsHtml(unitData) {
             </div>
         `;
     }
-    
+
     elementsHtml += '</div>';
     return elementsHtml;
 }
@@ -621,7 +621,7 @@ function openModal(unit) {
                 <h2 style="margin: 0; color: #ffffff;">${unit.name}</h2>
                 <div style="font-weight: bold; opacity: 0.8; font-size: 14px; margin-top: 5px;">${ui.bestTrait}</div>
                 <div class="trait-container" style="margin-top: 5px;">
-                    <img src="assets/traits/${unit.trait}.png" class="trait-img" onerror="this.style.display='none'">
+                    <img src="assets/traits/${traitNameClean.trim()}.png" class="trait-img" onerror="this.style.display='none'">
                     <div class="trait-tag ${traitClass}" style="padding: 0; font-size: 16px;">${traitNameClean}</div>
                 </div>
             </div>
