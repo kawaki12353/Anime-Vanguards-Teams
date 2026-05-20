@@ -32,8 +32,6 @@
                 --text: #ffffff;
                 --border: #2a2f3a;
                 --hover: #232836;
-                --lang-btn: #111;
-                --lang-btn-bg: #ffffff;
                 --primary: #64b5f6;
                 --trait-color: #34495e;
             }
@@ -228,8 +226,22 @@
             scrollbar-width: none;
             transform: scale(0.92); /* Modificado: Aumentado um Pouquinho o tamanho (de 0.85 para 0.92) */
             position: relative;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         .unit-slot::-webkit-scrollbar { display: none; }
+
+        /* Interação Azul de pulso ao clicar nos botões do Caloric */
+        .unit-slot.caloric-active-pulse {
+            border-color: #00bfff !important;
+            box-shadow: 0 0 15px #00bfff, inset 0 0 10px #00bfff;
+            animation: caloricPulseAnim 0.6s ease-in-out;
+        }
+
+        @keyframes caloricPulseAnim {
+            0% { transform: scale(0.92); }
+            50% { transform: scale(0.96); }
+            100% { transform: scale(0.92); }
+        }
 
         .unit-card {
             height: 100%;
@@ -678,7 +690,7 @@
             position: absolute;
             width: 28px;
             height: 28px;
-            border-radius: 0px;
+            border-radius: 50%; /* Modificado: Círculo ao invés de Quadrado */
             border: 1px solid #ffffff;
             background: rgba(0, 0, 0, 0.4);
             display: flex;
@@ -696,7 +708,7 @@
             width: 80% !important;
             height: 80% !important;
             object-fit: contain;
-            border-radius: 0px !important;
+            border-radius: 50%; /* Modificado: Círculo ao invés de Quadrado */
         }
     </style>
 </head>
@@ -796,6 +808,17 @@ let globalTeams = [];
 
 function capitalizeWords(str) {
     return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+}
+
+// Função auxiliar interna para acionar o efeito de pulso azul na Unit do Slot
+function triggerCaloricInteraction(slotElement) {
+    if (!slotElement) return;
+    slotElement.classList.remove('caloric-active-pulse');
+    void slotElement.offsetWidth; // Força reflow para reiniciar animação CSS se clicado seguidamente
+    slotElement.classList.add('caloric-active-pulse');
+    setTimeout(() => {
+        slotElement.classList.remove('caloric-active-pulse');
+    }, 600);
 }
 
 function loadDatabase() {
@@ -1057,6 +1080,7 @@ function renderTeams() {
                     frameUnit.className = 'caloric-frame-unit';
                     frameUnit.onclick = (e) => {
                         e.stopPropagation();
+                        triggerCaloricInteraction(slotDiv);
                         openModal(caloricUnitData);
                     };
                     frameUnit.innerHTML = `<img src="assets/units/${caloricUnitData.image}" onerror="this.src='assets/sem_icone.png'">`;
