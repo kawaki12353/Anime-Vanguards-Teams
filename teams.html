@@ -279,19 +279,24 @@
             border-radius: 20px; /* Mesma forma do DPS */
             color: #ffd700; /* Letra Amarela */
             cursor: pointer;
+            transition: transform 0.2s ease; /* Transição para o pequeno zoom */
+        }
+
+        .team-tags-btn:active {
+            transform: scale(1.08); /* Pequenino zoom ao clicar */
         }
 
         /* DPS Rank no canto superior direito */
         .team-rank {
             position: absolute;
             top: 10px;
-            right: 25px;
+            right: 22px; /* Vai um pouquinho mais para a direita (de 25px para 22px) */
             font-weight: bold;
-            font-size: 13px; /* Mesmo tamanho que a letra falando do DPS do time */
-            background: rgba(0, 128, 0, 0.2); /* Fundo Verde Transparente */
-            border: 1px solid #008000; /* Borda Verde */
-            padding: 3px 14px;
-            color: #008000; /* Cor da letra Verde */
+            font-size: 12.5px; /* Diminuído bem pouquinho o tamanho da fonte (de 13px para 12.5px) */
+            background: rgba(144, 238, 144, 0.2); /* Fundo Verde mais claro transparente (LightGreen) */
+            border: 1px solid #90ee90; /* Borda Verde mais claro (LightGreen) */
+            padding: 2px 14px; /* Diminuída um pouquinho a distância do fundo até a letra verticalmente (de 3px para 2px) */
+            color: #90ee90; /* Cor da letra Verde mais claro (LightGreen) */
             border-radius: 0px; /* Pontas pontiagudas (não redondas) */
         }
 
@@ -447,7 +452,7 @@
             font-weight: bold;
         }
 
-        /* Estilização para o texto Monarch / Títulos no Modal com degradê e sem fundo */
+        /* --- Estilização para o texto Monarch / Títulos no Modal com degradê e sem fundo --- */
         .monarch-gradient-text {
             background: linear-gradient(to right, #C71585, #0000FF, #00FFFF);
             -webkit-background-clip: text;
