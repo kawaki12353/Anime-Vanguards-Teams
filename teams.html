@@ -366,66 +366,6 @@
             border-radius: 0px; /* Pontas pontiagudas (não redondas) */
         }
 
-        /* Container absoluto para as molduras do Caloric e sua Unit */
-        .caloric-wrapper {
-            position: absolute;
-            top: 10px;
-            right: 140px; /* Posicionado ao lado esquerdo do DPS Rank */
-            width: 34px;
-            height: 34px;
-            z-index: 10;
-        }
-
-        /* Moldura quadrada e pontiaguda do Caloric */
-        .caloric-frame-skill {
-            position: absolute;
-            width: 28px;
-            height: 28px;
-            border-radius: 0px; /* Borda pontiaguda igual um quadrado */
-            border: 1px solid #ffffff; /* Borda branca */
-            background: rgba(0, 0, 0, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            backdrop-filter: blur(2px);
-            bottom: 0;
-            right: 0;
-            z-index: 2;
-        }
-
-        .caloric-frame-skill img {
-            width: 80%;
-            height: 80%;
-            object-fit: contain;
-        }
-
-        /* Moldura redonda com foto da Unit do Caloric (um pouquinho pra direita e pra cima) */
-        .caloric-frame-unit {
-            position: absolute;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%; /* Moldura igual dos elementos (redonda) */
-            border: 1px solid #ffffff; /* Borda branca */
-            background: rgba(0, 0, 0, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            backdrop-filter: blur(2px);
-            bottom: 10px;
-            right: -10px;
-            z-index: 1;
-            cursor: pointer;
-        }
-
-        .caloric-frame-unit img {
-            width: 85%;
-            height: 85%;
-            object-fit: contain;
-            border-radius: 50%;
-        }
-
         /* Estilo das Tags mostradas no Modal */
         .modal-tags-container {
             display: flex;
@@ -697,6 +637,66 @@
         .frame-epic-gradient {
             border: 3px solid transparent !important;
             background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)) padding-box, linear-gradient(135deg, #800080, #000000) border-box !important;
+        }
+
+        /* --- Custom Caloric Frames --- */
+        .caloric-wrapper {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 34px;
+            height: 34px;
+            z-index: 10;
+        }
+
+        .caloric-frame-skill {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 0px;
+            border: 1px solid #ffffff;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            backdrop-filter: blur(2px);
+            bottom: 0;
+            right: 0;
+            z-index: 12;
+            cursor: pointer;
+        }
+
+        .caloric-frame-skill img {
+            width: 80% !important;
+            height: 80% !important;
+            object-fit: contain;
+            border-radius: 0px !important;
+        }
+
+        .caloric-frame-unit {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 0px;
+            border: 1px solid #ffffff;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            backdrop-filter: blur(2px);
+            bottom: 10px;
+            right: -10px;
+            z-index: 11;
+            cursor: pointer;
+        }
+
+        .caloric-frame-unit img {
+            width: 80% !important;
+            height: 80% !important;
+            object-fit: contain;
+            border-radius: 0px !important;
         }
     </style>
 </head>
@@ -1015,25 +1015,6 @@ function renderTeams() {
         rankDiv.textContent = `DPS Rank: #${index + 1}`;
         block.appendChild(rankDiv);
 
-        // Renderiza as molduras do Caloric caso exista no database/teams.js para este time
-        if (team.caloric) {
-            const caloricWrapper = document.createElement('div');
-            caloricWrapper.className = 'caloric-wrapper';
-
-            // Busca os dados da unidade vinculada ao Caloric de acordo com o nome especificado
-            const caloricUnitData = globalUnits[team.caloric] || { name: team.caloric, trait: "Common", image: "sem_icone.png" };
-
-            caloricWrapper.innerHTML = `
-                <div class="caloric-frame-unit" onclick="event.stopPropagation(); openModal(globalUnits['${team.caloric.replace(/'/g, "\\'")}'] || { name: '${team.caloric.replace(/'/g, "\\'")}', trait: 'Common', image: 'sem_icone.png' })">
-                    <img src="assets/units/${caloricUnitData.image}" onerror="this.src='assets/sem_icone.png'">
-                </div>
-                <div class="caloric-frame-skill" onclick="event.stopPropagation(); openModal(globalUnits['${team.caloric.replace(/'/g, "\\'")}'] || { name: '${team.caloric.replace(/'/g, "\\'")}', trait: 'Common', image: 'sem_icone.png' })">
-                    <img src="assets/skills/Caloric.png" onerror="this.parentNode.style.display='none'">
-                </div>
-            `;
-            block.appendChild(caloricWrapper);
-        }
-
         const title = document.createElement('div');
         title.className = 'team-title';
         title.textContent = capitalizeWords(team.title[lang]);
@@ -1064,6 +1045,35 @@ function renderTeams() {
                     ${getElementsHtml(unitData)}
                     ${unitsInSlot.length > 1 && index === 0 ? '<div class="swap-indicator">▼ swap</div>' : ''}
                 `;
+
+                // Condicional Caloric aplicada para o Lich King (Ruler)
+                if (name === "Lich King (Ruler)" && team.caloric) {
+                    const caloricUnitData = globalUnits[team.caloric] || { name: team.caloric, trait: "Common", image: "sem_icone.png" };
+                    
+                    const caloricWrapper = document.createElement('div');
+                    caloricWrapper.className = 'caloric-wrapper';
+                    
+                    const frameUnit = document.createElement('div');
+                    frameUnit.className = 'caloric-frame-unit';
+                    frameUnit.onclick = (e) => {
+                        e.stopPropagation();
+                        openModal(caloricUnitData);
+                    };
+                    frameUnit.innerHTML = `<img src="assets/units/${caloricUnitData.image}" onerror="this.src='assets/sem_icone.png'">`;
+                    
+                    const frameSkill = document.createElement('div');
+                    frameSkill.className = 'caloric-frame-skill';
+                    frameSkill.onclick = (e) => {
+                        e.stopPropagation();
+                        openModal(caloricUnitData);
+                    };
+                    frameSkill.innerHTML = `<img src="assets/skills/Caloric.png" onerror="this.parentNode.style.display='none'">`;
+                    
+                    caloricWrapper.appendChild(frameUnit);
+                    caloricWrapper.appendChild(frameSkill);
+                    unitCard.appendChild(caloricWrapper);
+                }
+
                 slotDiv.appendChild(unitCard);
             });
 
@@ -1142,7 +1152,7 @@ function openModal(unit) {
     overlay.style.display = "block"; 
     modal.style.display = "flex";
 
-    // Sistema de verificação de tags [1] ou [2] no nome da trait
+    // Systema de verificação de tags [1] ou [2] no nome da trait
     let traitNameClean = unit.trait;
     let traitClass = "trait-white-text";
 
