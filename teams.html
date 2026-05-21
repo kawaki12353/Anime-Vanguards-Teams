@@ -335,7 +335,7 @@
         /* Botão #tags no canto esquerdo inferior */
         .team-tags-btn {
             font-weight: bold;
-            font-size: 13px; /* Mesmo tamanho que a letra falando do DPS do time */
+            font-size: 13px; /* Mesmo tamanho que a letra falando do DPS del time */
             background: rgba(255, 215, 0, 0.2); /* Fundo Amarelo Transparente */
             border: 1px solid #ffd700; /* Borda Amarela */
             padding: 3px 14px; /* Mesma forma do DPS */
@@ -771,7 +771,7 @@ const memorias = {
         "A Father's Sacrifice"
     ],
     "Legendary": [
-        "Soon"
+        "Soon2"
     ],
     "Epic": [
         "DoT Amplifier" 
@@ -781,10 +781,8 @@ const memorias = {
 // Função interna para descobrir o CSS do gradiente com base no nome da memória dentro do banco de dados fornecido
 function getMemoriaClass(memoriaName) {
     if (!memoriaName || memoriaName === "N/A") return "";
-    const lowerMemoriaName = memoriaName.toLowerCase().trim();
     for (const raridade in memorias) {
-        const lowerList = memorias[raridade].map(m => m.toLowerCase().trim());
-        if (lowerList.includes(lowerMemoriaName)) {
+        if (memorias[raridade].includes(memoriaName)) {
             return `frame-${raridade.toLowerCase()}-gradient`;
         }
     }
