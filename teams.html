@@ -751,34 +751,31 @@ const uiText = {
     en: { btn: "🇺🇸 EN", dpsLabel: "Total DPS: ", bestTrait: "Best Trait: ", familiarLabel: "Familiar: ", memoriaLabel: "Memory: ", noTeams: "No teams here yet", closeMsg: "Click outside to close", searchPlaceholder: "Search teams...", tagsLabel: "Team Tags", allTags: "Tags", allUnits: "Units" }
 };
 
-// Objeto do Banco de dados das Memórias para verificação de raridade
+// Objeto do Banco de dados das Memórias estruturado com suporte a Array conforme solicitado
 const memorias = {
     "Vanguard": [
+        "The True Savior",
         "Enthusiastic Walks",
         "Peak of Shinobi"
     ],
     "Secret": [
+        "Perpetual Motion",
         "All I've Got",
         "Ultimate Deceiver",
         "Shall Know Pain",
         "Company Captain's Presence",
         "Trust of Others"
     ],
-    "Exclusive": [
-        "Soon"
-    ],
     "Mythic": [
+        "POWAHH!!!",
         "A Father's Sacrifice"
-    ],
-    "Legendary": [
-        "Soon2"
     ],
     "Epic": [
         "DoT Amplifier" 
     ]
 };
 
-// Função interna para descobrir o CSS do gradiente com base no nome da memória dentro do banco de dados fornecido
+// Função dinâmica que varre o database/memorias buscando de forma correta pelo nome exato da Memória
 function getMemoriaClass(memoriaName) {
     if (!memoriaName || memoriaName === "N/A") return "";
     for (const raridade in memorias) {
