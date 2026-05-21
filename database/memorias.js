@@ -1,5 +1,6 @@
 const memorias = {
     "Vanguard": {
+        "The True Savior",
         "Enthusiastic Walks",
         "Peak of Shinobi"
     },
@@ -12,6 +13,7 @@ const memorias = {
         "Trust of Others"
     },
     "Mythic": {
+        "POWAHH!!!",
         "A Father's Sacrifice"
     },
     "Epic": {
