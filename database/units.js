@@ -7,7 +7,7 @@ const units = {
         memoria: "DoT Amplifier"
     },
     "Demon Hybrid (Chainsaw)": {
-        elements: "Unbound",
+        elements: "Curse",
         trait: "[1]Monarch[1]",
         image: "Demon_Hybrid_(Chainsaw).png",
         familiar: "The Doctor",
