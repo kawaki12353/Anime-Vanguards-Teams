@@ -18,7 +18,7 @@ const memorias = {
         "A Father's Sacrifice"
     },
     "Legendary": {
-        "Soon"
+        "Soon2"
     },
     "Epic": {
         "DoT Amplifier" 
