@@ -11,14 +11,8 @@ const memorias = {
         "Company Captain's Presence",
         "Trust of Others"
     },
-    "Exclusive": {
-        "Soon"
-    },
     "Mythic": {
         "A Father's Sacrifice"
-    },
-    "Legendary": {
-        "Soon2"
     },
     "Epic": {
         "DoT Amplifier" 
