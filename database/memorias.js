@@ -22,5 +22,5 @@ const memorias = {
     },
     "Epic": {
         "DoT Amplifier" 
-    },
+    }
 };
