@@ -596,11 +596,34 @@
             justify-content: center;
             overflow: hidden;
             order: 0; /* Invertido: Mantém a moldura no topo, logo após a label fixa */
+            position: relative; /* Adicionado para permitir posicionamento absoluto interno */
         }
 
         .modal-frame-square img {
             width: 90%;
             height: 90%;
+            object-fit: contain;
+        }
+
+        /* Moldura de m_trait interna para o canto superior esquerdo da Memória */
+        .modal-m-trait-frame {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #ffffff;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .modal-m-trait-frame img {
+            width: 90% !important;
+            height: 90% !important;
             object-fit: contain;
         }
 
@@ -801,12 +824,20 @@ function loadDatabase() {
 
         globalTeams = Object.keys(teams).map(teamName => {
             const t = teams[teamName];
+            
+            // Mapeando os slots capturando o objeto interno {unit, m_trait}
+            const slotsData = [t.slot1, t.slot2, t.slot3, t.slot4, t.slot5, t.slot6].filter(Boolean);
+
             return {
                 title: { pt: teamName, en: teamName },
-                units: [t.slot1, t.slot2, t.slot3, t.slot4, t.slot5, t.slot6],
+                // Armazena a estrutura do slot mapeada com o nome da unit e sua m_trait
+                units: slotsData.map(slot => ({
+                    unitName: slot.unit,
+                    m_trait: slot.m_trait || ""
+                })),
                 dps: t.dps || "Stats N/A",
                 tags: t.tags || [], // Guardando as tags estruturadas do teams.js
-                caloric: t.caloric || null
+                caloric: t.caloric ? { unitName: t.caloric.unit, m_trait: t.caloric.m_trait || "" } : null
             };
         });
 
@@ -872,12 +903,9 @@ function setupFilters() {
     
     globalTeams.forEach(team => {
         team.units.forEach(slot => {
-            const names = Array.isArray(slot) ? slot : [slot];
-            names.forEach(name => {
-                if (globalUnits[name]) {
-                    unitsInTeams.add(name);
-                }
-            });
+            if (globalUnits[slot.unitName]) {
+                unitsInTeams.add(slot.unitName);
+            }
         });
     });
 
@@ -979,12 +1007,7 @@ function renderTeams() {
         // Verifica Filtro 2: Presença da Unit no Time
         let matchUnit = !selectedUnit;
         if (selectedUnit) {
-            matchUnit = team.units.some(slot => {
-                if (Array.isArray(slot)) {
-                    return slot.includes(selectedUnit);
-                }
-                return slot === selectedUnit;
-            });
+            matchUnit = team.units.some(slot => slot.unitName === selectedUnit);
         }
 
         return matchTag && matchUnit;
@@ -1017,29 +1040,23 @@ function renderTeams() {
         const grid = document.createElement('div');
         grid.className = 'unit-grid';
 
-        team.units.forEach(unitNameOrArray => {
+        team.units.forEach(slot => {
             const slotDiv = document.createElement('div');
             slotDiv.className = 'unit-slot';
 
-            const unitsInSlot = Array.isArray(unitNameOrArray) ? unitNameOrArray : [unitNameOrArray];
+            const unitData = globalUnits[slot.unitName] || { name: slot.unitName, trait: "Common", image: "sem_icone.png" };
 
-            unitsInSlot.forEach((name, index) => {
-                const unitData = globalUnits[name] || { name: name, trait: "Common", image: "sem_icone.png" };
+            const unitCard = document.createElement('div');
+            unitCard.className = 'unit-card';
+            // Repassa a m_trait dinâmica do time para a função openModal
+            unitCard.onclick = () => openModal(unitData, slot.m_trait);
 
-                const unitCard = document.createElement('div');
-                unitCard.className = 'unit-card';
-                unitCard.onclick = () => openModal(unitData);
+            unitCard.innerHTML = `
+                <img src="assets/units/${unitData.image}" onerror="this.src='assets/sem_icone.png'">
+                ${getElementsHtml(unitData)}
+            `;
 
-                // Removida a trait antiga do canto superior esquerdo e adicionadas as molduras redondas de elementos no canto inferior direito
-                unitCard.innerHTML = `
-                    <img src="assets/units/${unitData.image}" onerror="this.src='assets/sem_icone.png'">
-                    ${getElementsHtml(unitData)}
-                    ${unitsInSlot.length > 1 && index === 0 ? '<div class="swap-indicator">▼ swap</div>' : ''}
-                `;
-
-                slotDiv.appendChild(unitCard);
-            });
-
+            slotDiv.appendChild(unitCard);
             grid.appendChild(slotDiv);
         });
 
@@ -1059,11 +1076,11 @@ function renderTeams() {
 
         // Condicional Caloric aplicada para renderizar ao lado do botão de Tags
         if (team.caloric) {
-            const caloricUnitData = globalUnits[team.caloric] || { name: team.caloric, trait: "Common", image: "sem_icone.png" };
+            const caloricUnitData = globalUnits[team.caloric.unitName] || { name: team.caloric.unitName, trait: "Common", image: "sem_icone.png" };
             
             const caloricFooterBtn = document.createElement('div');
             caloricFooterBtn.className = 'caloric-footer-btn-wrapper';
-            caloricFooterBtn.onclick = () => openModal(caloricUnitData);
+            caloricFooterBtn.onclick = () => openModal(caloricUnitData, team.caloric.m_trait);
             
             const frameUnit = document.createElement('div');
             frameUnit.className = 'caloric-frame-unit';
@@ -1132,7 +1149,7 @@ function openTagsModal(team) {
     }, 10);
 }
 
-function openModal(unit) {
+function openModal(unit, mTrait = "") {
     const modal = document.getElementById('modalContent');
     const overlay = document.getElementById('modalOverlay');
     const ui = uiText[lang];
@@ -1163,6 +1180,17 @@ function openModal(unit) {
     const memoriaGradientClass = getMemoriaClass(memoriaNome);
     const familiarGradientClass = "frame-familiar-gradient";
 
+    // Montando a moldura da m_trait apenas se ela existir
+    let mTraitHtml = "";
+    if (mTrait && mTrait !== "") {
+        const mTraitImgFile = mTrait.split(' ').join('_') + '.png';
+        mTraitHtml = `
+            <div class="modal-m-trait-frame">
+                <img src="assets/traits/${mTraitImgFile}" onerror="this.parentNode.style.display='none'">
+            </div>
+        `;
+    }
+
     // Adicionado os elementos por cima da foto da Unit do mesmo jeito que no Grid
     modal.innerHTML = `
         <div style="display: flex; align-items: center; gap: 20px; width: 100%; text-align: left;">
@@ -1186,6 +1214,7 @@ function openModal(unit) {
                 <div class="modal-frame-label">${ui.memoriaLabel}</div>
                 <div class="modal-frame-title">${memoriaNome}</div>
                 <div class="modal-frame-square ${memoriaGradientClass}">
+                    ${mTraitHtml}
                     <img src="assets/memoria/${memoriaImgFile}" onerror="this.src='assets/sem_icone.png'">
                 </div>
             </div>
